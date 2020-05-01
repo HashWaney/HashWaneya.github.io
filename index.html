@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
 <meta property="og:title" content="HashWaney">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:url" content="http://hashwaney.github.io/index.html">
 <meta property="og:site_name" content="HashWaney">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="HashWaney">
@@ -61,7 +61,7 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://hashwaney.github.io"></form>
       </div>
     </div>
   </div>
@@ -98,7 +98,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/05/01/UDP/" data-id="ck9o0jno40004y53b7bs15mop" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9o0nyct0005z53b4fwgcdsn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -243,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/30/TCP/" data-id="ck9o0jno50005y53b81v34c1m" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCP/" data-id="ck9o0nycs0004z53b6mug8dfv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
@@ -282,14 +282,14 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h3><p>   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C/C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C/C++层进行安排， 那么问题来了，C/C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？</p>
-<h3 id="CallXXXMethod-FindClass-GetMethodID的介绍"><a href="#CallXXXMethod-FindClass-GetMethodID的介绍" class="headerlink" title="CallXXXMethod,FindClass,GetMethodID的介绍"></a>CallXXXMethod,FindClass,GetMethodID的介绍</h3><p>自然JNIEnv这个上下文充当这个角色，可以完成相关的C/C++的回调工作，当然JNIEnv是和线程相关的具体可以看<br><a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>这一章介绍。</p>
+<h3 id="CallXXXMethod-FindClass-GetMethodID的介绍"><a href="#CallXXXMethod-FindClass-GetMethodID的介绍" class="headerlink" title="CallXXXMethod,FindClass,GetMethodID的介绍"></a>CallXXXMethod,FindClass,GetMethodID的介绍</h3><p>自然JNIEnv这个上下文充当这个角色，可以完成相关的C/C++的回调工作，当然JNIEnv是和线程相关的具体可以看<br><a href="https://hashwaney.github.io/2020/04/29/JNI">JNI 学习 阶段（1）—基础概念介绍</a>这一章介绍。</p>
 <p>具体来看：JNIEnv (jni.h)</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">JNIEnv</span>&#123;</span></span><br><span class="line">        <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterfaces</span>* <span class="title">functions</span>;</span>    </span><br><span class="line">        <span class="meta">#<span class="meta-keyword">if</span> defined(__cplusplus)</span></span><br><span class="line">            </span><br><span class="line">            .....</span><br><span class="line">            <span class="comment">// 类似Class.forName();Java 不知这两个有没有关系 native 方法没有研究 TODO 有空研究一下</span></span><br><span class="line">            <span class="function">jclass <span class="title">FindClass</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* name)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;FindClass(<span class="keyword">this</span>,name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 根据clazz 和 方法名 以及方法签名来找到方法ID</span></span><br><span class="line">            <span class="function">jmethodID <span class="title">GetMethodID</span><span class="params">(jclass clazz,<span class="keyword">const</span> <span class="keyword">char</span>* name,<span class="keyword">char</span>* sign)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;GetMethodID(<span class="keyword">this</span>,clazz,name,sign);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//自然找到类 找到了方法Id 就是要调用这个类的方法 XXX 代表返回值 如果是无返回值则xxx = Void 即CallVoidMethod 如果返回值为Object 则jobject CallObjectMethod 其他类推</span></span><br><span class="line">            <span class="function"><span class="keyword">void</span> <span class="title">CallXXXMethod</span><span class="params">(jobject obj,jmethodID methodId,...)</span></span>&#123;</span><br><span class="line">                va_list args; <span class="comment">//可变参数</span></span><br><span class="line">                va_start(args,methodId);<span class="comment">//初始化变元指针</span></span><br><span class="line">                functions-&gt;CallVoidMethodV(<span class="keyword">this</span>,obj,methodId,args);</span><br><span class="line">                va_end(args);<span class="comment">//取完参数，保证堆栈的恢复</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 
 <p>总结：JNIEnv这货里面竟然有一个JNINativeInteface指针 该指针是一个结构体，里面定义了大量的函数，原来env大部分的操作其实是在操作JNINativeInterface指针，这货才是爸爸，你懂吗，直接是操作了C层定义的函数，</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">//  Table of interface function pointers. </span></span><br><span class="line">    <span class="comment">//   What? 函数指针接口表，是这个意思吗；</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterface</span>&#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">        jint (*GetVersion)(JNIEnv* );</span><br><span class="line"></span><br><span class="line">        jclass (*FindClass)(JNIEnv*, <span class="keyword">const</span> <span class="keyword">char</span>*);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> (*CallVoidMethod)(JNIEnv*,jobject,jmethodID,...);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//少侠，看到这里是不是似成相识啊，与上面的是不是有点相似，</span></span><br><span class="line">        <span class="comment">//但是看到这里我觉得C就是变态，少写个形参，是错过晚饭时间吗，jint (*GetVersion)(JNIEnv* env); 这样不是更好点吗，</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//好了 闲扯一堆 这里顺便复习一下指针函数和函数指针：</span></span><br><span class="line">        类型说明符 (*函数名)(参数)  ---&gt; 函数指针</span><br><span class="line">        类型说明符  *函数名 (参数)  ---&gt; 指针函数 </span><br><span class="line"></span><br><span class="line">        <span class="comment">// 指针函数 返回的是某一特定的类型指针</span></span><br><span class="line">        <span class="comment">// 函数指针 本质是指针，是指向函数的指针变量，那么指向的函数声明要和函数指针声明要一致，比如int(*fun)(int x);</span></span><br><span class="line">        <span class="keyword">int</span> * f =fun;<span class="comment">//将fun函数的首地址赋值给指针f； 同样都是声明int</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="你以为这样就可以了吗，太天真了吧？"><a href="#你以为这样就可以了吗，太天真了吧？" class="headerlink" title="你以为这样就可以了吗，太天真了吧？"></a>你以为这样就可以了吗，太天真了吧？</h3><p>上诉我们已经知道了JNIEnv的方法调用是通过JNINativeInterface这个调用定义的各种函数，<br>但是JNIEnv在上节<a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>提出了与线程相关的；<br>嗯? 于是陷入思考，线程相关是吧，子线程的调用主线程的env 怎么样，会不会很酸爽呢，是的，会很酸爽，<br>异常结果有空再贴 TODO</p>
+<h3 id="你以为这样就可以了吗，太天真了吧？"><a href="#你以为这样就可以了吗，太天真了吧？" class="headerlink" title="你以为这样就可以了吗，太天真了吧？"></a>你以为这样就可以了吗，太天真了吧？</h3><p>上诉我们已经知道了JNIEnv的方法调用是通过JNINativeInterface这个调用定义的各种函数，<br>但是JNIEnv在上节<a href="https://hashwaney.github.io/2020/04/29/JNI">JNI 学习 阶段（1）—基础概念介绍</a>提出了与线程相关的；<br>嗯? 于是陷入思考，线程相关是吧，子线程的调用主线程的env 怎么样，会不会很酸爽呢，是的，会很酸爽，<br>异常结果有空再贴 TODO</p>
 <p>这里抛出这个问题吧，JNIEnv是线程相关的，对，但是别忘记了JavaVm确是Zygote孵化进程的时候，通过AndroidRuntime.cpp 这货 startVm （开启了Vm）–&gt; startReg (注册JNI) ，因此Vm是整个进程中是唯一的，<br>因此解决方案来了，开撕VM， 这货有一个跟线程相关的方法，AttachCurrentThread 和 DetachCurrentThread这对双胞胎方法，ok。</p>
 <p>查看（java_vm_ext.cc)</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">AttachCurrentThread</span><span class="params">(JavaVM* vm,JNIEnv** env,<span class="keyword">void</span>* thr_args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> AttachCurrentThreadInternal(vm,env,thr_args,<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">DetachCurrentThread</span><span class="params">(JavaVM* vm)</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(vm==<span class="literal">nullptr</span> || Thread::Current==<span class="literal">nullptr</span>)&#123;</span><br><span class="line">     <span class="keyword">return</span> JNI_ERR;</span><br><span class="line">  &#125;</span><br><span class="line">        <span class="comment">// TODO 其实看到这里，我觉得你应该就可以把JavaVM 和 Runtime 这厮 联系起来，说不好八百年他们是一家，或许有蛋生鸡，鸡生蛋的祖辈关系，如果想了解 ---- &gt; 请查看AndroidRuntime.cpp --&gt; AppRuntime.cpp ---&gt; startVm --&gt;startReg 这条主线。</span></span><br><span class="line">  JavaVMExt* raw_vm = (JavaVMExt*) vm;</span><br><span class="line">  Runtime* runtime =raw_vm-&gt;GetRuntime();</span><br><span class="line">  runtime-&gt;DetachCurrentThread();</span><br><span class="line">  <span class="keyword">return</span> JNI_OK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -308,7 +308,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/29/JNI-CallBack/" data-id="ck9o0jnnx0000y53bhkt77jhn" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9o0nyck0000z53b8th2ety2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -363,7 +363,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/04/29/JNI/" data-id="ck9o0jno10001y53bbpvd0t2k" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9o0nycp0001z53b8tei8dgw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
