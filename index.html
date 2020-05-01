@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>HashWaney</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="HashWaney">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="HashWaney">
+<meta property="og:locale" content="en_US">
+<meta property="article:author" content="HashWaney">
+<meta property="article:tag" content="coder">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="HashWaney" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">HashWaney</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Action and Thinking</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-UDP用户数据报协议" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/01/UDP%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%8A%A5%E5%8D%8F%E8%AE%AE/" class="article-date">
+  <time datetime="2020-05-01T04:41:36.673Z" itemprop="datePublished">2020-05-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/01/UDP%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%8A%A5%E5%8D%8F%E8%AE%AE/">UDP用户数据报协议</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="UDP用户数据报协议"><a href="#UDP用户数据报协议" class="headerlink" title="UDP用户数据报协议"></a>UDP用户数据报协议</h2><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>UDP是一个简单的面向数据报的运输层协议：</p>
+<p>进程的每个输出操作都正好产生一个UDP数据报（强调单个），并组装成一份待发送的IP数据报；</p>
+<p>对比：多个–》<strong>组成面向流字符</strong>的协议 TCP，应用程序产生的全体数据。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/05/01/UDP%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%8A%A5%E5%8D%8F%E8%AE%AE/" data-id="ck9nrihc60004zk3bas7t8j1f" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-tcp" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/30/tcp/" class="article-date">
+  <time datetime="2020-04-30T14:33:35.000Z" itemprop="datePublished">2020-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/30/tcp/">TCP协议</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="TCP-IP协议族"><a href="#TCP-IP协议族" class="headerlink" title="TCP/IP协议族"></a>TCP/IP协议族</h2><h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p>![image-20200430223637420](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430223637420.png)</p>
+<p>每一层负责不同的功能：</p>
+<p>链路层：设备网卡驱动</p>
+<p>网络层：IP协议（网际协议），ICMP协议（Internet互联网控制报文协议）IGMP协议（Internet组管理协议）</p>
+<p>运输层：为两台主机上的应用程序提供端到端的通信，</p>
+<p>​                UDP（用户数据报协议）：为应用层提供一种非常简单的服务，把数据报的分组从一台主机发送到另一台主机，不保证数据报能到达另一端，可靠性由应用层来提供。</p>
+<p>​                TCP（传输控制协议）：为两台主机提供高可靠性的数据通信，把应用程序交给它的数据分成合适的小块交给下面的网络层。</p>
+<p>应用层：负责特定的应用程序细节</p>
+<p>![image-20200430225910667](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430225910667.png)</p>
+<p>FTP是应用层协议，TCP是一种运输层协议，IP是一种网络层协议，而以太网协议则应用与链路层，TCP/IP协议族是一组不同的协议组合在一起构成的协议族。</p>
+<p>在TCP/IP协议族中，网络层IP提供是一种不可靠的服务，也就是说它是尽可能快地把分组从源节点送到目的节点，但是不提供任何可靠性保证，TCP在不可靠的IP层提供了一个可靠的传输层，为了提供这种可靠服务，TCP采用了超时重传，发送和接收端到端的确认分组等机制。</p>
+<h3 id="TPC-IP的分层"><a href="#TPC-IP的分层" class="headerlink" title="TPC/IP的分层"></a>TPC/IP的分层</h3><p>![image-20200430230955893](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430230955893.png)</p>
+<p>​        总结： </p>
+<p>​        TCP和UDP是著名的传输层协议，二者都使用IP作为网络层协议</p>
+<p>​        TCP使用不可靠的IP服务，但是它提供一种可靠的运输层服务</p>
+<p>​        UDP为应用程序发送和接收数据报，UDP是不可靠的，不能保证数据报安全无误的到达最        终目的。</p>
+<p>​        IP是网络上的主要协议，同时被TCP和UDP使用，TCP和UDP的每组数据通过端系统和每个中间路由器中的IP层在互联网中进行传输。</p>
+<p>​        ICMP是IP协议的附属协议，IP层用其与其他主机或路由器交换错误报文和其他重要信息。</p>
+<p>​        IGMP是Internet组管理协议，用来把一个UDP数据报多播到多个主机。（广播和多播）</p>
+<p>​        ARP（地址解析协议）和 RARP（逆地址解析协议）是某些网络接口使用的特殊协议。用来转换IP层和网络接口层的地址。</p>
+<h3 id="互联网地址"><a href="#互联网地址" class="headerlink" title="互联网地址"></a>互联网地址</h3><p>![image-20200430232329896](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430232329896.png)</p>
+<p>互联网上每个接口必须有一个唯一的地址（IP地址），IP地址长32bit，IP地址具有一定的结构，（32/8）4个十进制的数。</p>
+<p>三类IP地址：</p>
+<p>单播地址（目的为单个主机）</p>
+<p>广播地址（目的端为给定网络上的所有主机）</p>
+<p>多播地址（目的端为同一组内的所有主机）</p>
+<p>![image-20200430233316181](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430233316181.png)</p>
+<h3 id="域名系统"><a href="#域名系统" class="headerlink" title="域名系统"></a>域名系统</h3><p>主机名—IP映射</p>
+<p>域名系统（DNS）是一个分布的数据库，提供IP地址和主机名之间的映射信息。</p>
+<p>任何应用程序都可以调用一个标准的库函数来查看给定名字的主机的IP地址，</p>
+<p>系统还提供一个逆函数—给定主机的IP地址，查看对应的主机名</p>
+<h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><p>![image-20200430233514447](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430233514447.png)</p>
+<p>应用程序用TCP传送数据时，数据被送入到协议栈中，然后逐个通过每一层直到被当作一串</p>
+<p>比特流送入到网路，其中每一层对接收的数据都要增加一些首部数据（有时候还要增加一些尾部数据）</p>
+<p>TCP—&gt; IP 称为TCP报文段（TCP segment）</p>
+<p>UDP—&gt;IP 称为UDP数据报（UDP datagram）</p>
+<p>IP—-&gt;网络接口层 称为IP数据报（IP datagram）</p>
+<p>通过以太网传输的比特流称为帧（Frame）</p>
+<p>TCP，UDP，ICMP，IGMP都向IP传送数据，IP必须在生成一个IP首部中加入某种表示，</p>
+<p>表明数据属于哪一层，协议域：1表示ICMP 2表示IGMP 6表示TCP 17表示UDP</p>
+<p>运输层协议在生成报文首部时要存入一个应用程序的标识符。</p>
+<p>TCP和UDP都用一个16bit的<strong>端口号</strong>来表示不同的应用程序，</p>
+<p>TCP和UDP把源端口号和目的端口号分别存入报文首部中。</p>
+<p>同理，以太网要区分IP，ARP，和RARP数据，也要在其首部加入一个16bit的帧类型域。</p>
+<h3 id="分用"><a href="#分用" class="headerlink" title="分用"></a>分用</h3><p>其实就是封装的逆过程，去除相应的首部获取真正的数据源。</p>
+<p>![image-20200430235016887](/Users/wangqing/Library/Application Support/typora-user-images/image-20200430235016887.png)</p>
+<p>当目的主机接收到一个以太网数据帧时，数据就开始从协议栈中由底向上升，同时去掉</p>
+<p>各层协议加上的报文首部，每层协议盒都去检查报文首部中的协议标识，以确定接收数据的上层协议。</p>
+<p>TODO 协议确实是通过目的端口号，源IP地址和源端口号进行解包的。</p>
+<h3 id="客户-服务器模型"><a href="#客户-服务器模型" class="headerlink" title="客户-服务器模型"></a>客户-服务器模型</h3><p>应用程序：一端是客户，一端是服务器，服务器为客户提供特定服务。</p>
+<p>服务器可分为重复型和并发型</p>
+<p>交互：</p>
+<p>​    重复型服务器：</p>
+<p>​    1.等待一个客户请求到来；</p>
+<p>​    2.处理客户请求；</p>
+<p>​    3.发送响应给请求的客户；</p>
+<p>​    4.返回1；</p>
+<p>​    总结：在2步骤中不能为其他客户提供服务；</p>
+<p>   并发型服务器：</p>
+<p>​    1.等待一个客户请求到来；</p>
+<p>​    2.启动一个新的服务器来处理请求，处理结束，终止新的服务器；</p>
+<p>​    3.返回1；</p>
+<p>​    总结：并发服务器优点就是在于它利用生成其他服务器的方法来处理客户请求，</p>
+<p>​                每个客户都有其对应的服务器；</p>
+<p>一般来说，TCP服务器是并发的，UDP服务器是重复的。</p>
+<h3 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h3><p>端口如何选择呢？</p>
+<p>知名端口号：1-255之间</p>
+<p>Unix系统：256-1023之间</p>
+<p>注：</p>
+<p>服务器</p>
+<p>一般都是通过知名端口号来识别的，对于每个TCP/IP实现来说，</p>
+<p>FTP服务器的TCP端口号都是21，</p>
+<p>每个Telnet服务器的TCP端口号都是23；</p>
+<p>每个TFTP（简单文件传送协议）服务器的UDP端口号都是69；</p>
+<p>任何TCP/IP实现所提供的服务都是用知名的1-1023之间的端口号；</p>
+<p>客户端</p>
+<p>通常对所使用的端口号并不关心，只需保证该端口号在本机上是唯一的，</p>
+<p>客户端口号又被称为临时端口号（存在时间很短暂）因为通常在用户运行该客户程序时才存在。</p>
+<p>临时端口号：1024-5000之间的端口号；</p>
+<p>Unix系统文件/etc/services包含了熟知的端口号；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grep telnet /etc/services </span><br><span class="line">telnet 23/udp UDP端口号23</span><br><span class="line">telnet 23/tcp TCP端口号23</span><br><span class="line">login  513/tcp 远程登录端口513</span><br></pre></td></tr></table></figure>
+
+<img src="/Users/wangqing/Library/Application Support/typora-user-images/image-20200501114740386.png" alt="image-20200501114740386" style="zoom:50%;" />
+
+
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grep domain /etc/services</span><br><span class="line">domain 53/udp</span><br><span class="line">domain 53/tcp </span><br><span class="line">使用了UDP端口号53 和TCP端口号53</span><br></pre></td></tr></table></figure>
+
+
+
+<p>![image-20200501115926252](/Users/wangqing/Library/Application Support/typora-user-images/image-20200501115926252.png)</p>
+<h3 id="标准化过程"><a href="#标准化过程" class="headerlink" title="标准化过程"></a>标准化过程</h3><p>谁控制TCP/IP协议族，谁定义新的标准：</p>
+<p>1、Internet协会（ISOC）：推动、支持和促进Internet不断增产和发展的专业组织；</p>
+<p>2、Internet体系结构委员会（IAB）： 技术监督和协调；</p>
+<p>3、Internet工程专门小组（IETF）：面向近期标准的组织；</p>
+<p>4、Internet研究专门小组（IRIF）：长远项目研究；</p>
+<h3 id="RFC"><a href="#RFC" class="headerlink" title="RFC"></a>RFC</h3><p>所有关于Internet的正式标准都是RFC 文档出版，出版的目的只是为了提供信息，更改了那些东西，（地址，端口号）；</p>
+<p>1）赋值RFC</p>
+<p>2）Internet正式协议标准</p>
+<p>3）主机需求RFC</p>
+<p>4）路由器需求RFC</p>
+<h3 id="互联网"><a href="#互联网" class="headerlink" title="互联网"></a>互联网</h3><p>Internet 和 internet 的区别</p>
+<p>internet意思是用一个共同的协议族把多个网络连接在一起，</p>
+<p>Internet指的是世界范围内通过TCP/IP互相通信的所有主机集合（more than  1000000）；</p>
+<p>Internet是一个internet，但是internet不等于Internet</p>
+<h3 id="应用编程接口"><a href="#应用编程接口" class="headerlink" title="应用编程接口"></a>应用编程接口</h3><p>使用TCP/IP协议的应用程序通常采用两种应用编程接口（API）：<strong>Socket</strong>和<strong>TLI</strong>（运输层接口）</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>TCP/IP协议族分为四层：</p>
+<p>链路层、网络层、运输层、应用层；</p>
+<p>网络层（IP）提供点到点的服务；</p>
+<p>运输层（TCP和UDP）提供端到端的服务；</p>
+<p>每个接口都用IP地址标识，域名系统（DNS）为主机名和IP地址之间提供动态的映射</p>
+<p>端口号用来标识互相通信的应用程序，</p>
+<p>服务器使用知名端口号，</p>
+<p>客户使用临时设定的端口号。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/30/tcp/" data-id="ck9nrihc70005zk3bb8ffeoqf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-JNI-CallBack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/29/JNI-CallBack/" class="article-date">
+  <time datetime="2020-04-29T10:17:26.000Z" itemprop="datePublished">2020-04-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/29/JNI-CallBack/">JNI 学习阶段（2）-Java与C/C++之间的相互回调</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h3><p>   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C/C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C/C++层进行安排， 那么问题来了，C/C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？</p>
+<h3 id="CallXXXMethod-FindClass-GetMethodID的介绍"><a href="#CallXXXMethod-FindClass-GetMethodID的介绍" class="headerlink" title="CallXXXMethod,FindClass,GetMethodID的介绍"></a>CallXXXMethod,FindClass,GetMethodID的介绍</h3><p>自然JNIEnv这个上下文充当这个角色，可以完成相关的C/C++的回调工作，当然JNIEnv是和线程相关的具体可以看<br><a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>这一章介绍。</p>
+<p>具体来看：JNIEnv (jni.h)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">JNIEnv</span>&#123;</span></span><br><span class="line">        <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterfaces</span>* <span class="title">functions</span>;</span>    </span><br><span class="line">        <span class="meta">#<span class="meta-keyword">if</span> defined(__cplusplus)</span></span><br><span class="line">            </span><br><span class="line">            .....</span><br><span class="line">            <span class="comment">// 类似Class.forName();Java 不知这两个有没有关系 native 方法没有研究 TODO 有空研究一下</span></span><br><span class="line">            <span class="function">jclass <span class="title">FindClass</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* name)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;FindClass(<span class="keyword">this</span>,name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 根据clazz 和 方法名 以及方法签名来找到方法ID</span></span><br><span class="line">            <span class="function">jmethodID <span class="title">GetMethodID</span><span class="params">(jclass clazz,<span class="keyword">const</span> <span class="keyword">char</span>* name,<span class="keyword">char</span>* sign)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;GetMethodID(<span class="keyword">this</span>,clazz,name,sign);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//自然找到类 找到了方法Id 就是要调用这个类的方法 XXX 代表返回值 如果是无返回值则xxx = Void 即CallVoidMethod 如果返回值为Object 则jobject CallObjectMethod 其他类推</span></span><br><span class="line">            <span class="function"><span class="keyword">void</span> <span class="title">CallXXXMethod</span><span class="params">(jobject obj,jmethodID methodId,...)</span></span>&#123;</span><br><span class="line">                va_list args; <span class="comment">//可变参数</span></span><br><span class="line">                va_start(args,methodId);<span class="comment">//初始化变元指针</span></span><br><span class="line">                functions-&gt;CallVoidMethodV(<span class="keyword">this</span>,obj,methodId,args);</span><br><span class="line">                va_end(args);<span class="comment">//取完参数，保证堆栈的恢复</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：JNIEnv这货里面竟然有一个JNINativeInteface指针 该指针是一个结构体，里面定义了大量的函数，原来env大部分的操作其实是在操作JNINativeInterface指针，这货才是爸爸，你懂吗，直接是操作了C层定义的函数，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">//  Table of interface function pointers. </span></span><br><span class="line">    <span class="comment">//   What? 函数指针接口表，是这个意思吗；</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterface</span>&#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">        jint (*GetVersion)(JNIEnv* );</span><br><span class="line"></span><br><span class="line">        jclass (*FindClass)(JNIEnv*, <span class="keyword">const</span> <span class="keyword">char</span>*);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> (*CallVoidMethod)(JNIEnv*,jobject,jmethodID,...);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//少侠，看到这里是不是似成相识啊，与上面的是不是有点相似，</span></span><br><span class="line">        <span class="comment">//但是看到这里我觉得C就是变态，少写个形参，是错过晚饭时间吗，jint (*GetVersion)(JNIEnv* env); 这样不是更好点吗，</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//好了 闲扯一堆 这里顺便复习一下指针函数和函数指针：</span></span><br><span class="line">        类型说明符 (*函数名)(参数)  ---&gt; 函数指针</span><br><span class="line">        类型说明符  *函数名 (参数)  ---&gt; 指针函数 </span><br><span class="line"></span><br><span class="line">        <span class="comment">// 指针函数 返回的是某一特定的类型指针</span></span><br><span class="line">        <span class="comment">// 函数指针 本质是指针，是指向函数的指针变量，那么指向的函数声明要和函数指针声明要一致，比如int(*fun)(int x);</span></span><br><span class="line">        <span class="keyword">int</span> * f =fun;<span class="comment">//将fun函数的首地址赋值给指针f； 同样都是声明int</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="你以为这样就可以了吗，太天真了吧？"><a href="#你以为这样就可以了吗，太天真了吧？" class="headerlink" title="你以为这样就可以了吗，太天真了吧？"></a>你以为这样就可以了吗，太天真了吧？</h3><p>上诉我们已经知道了JNIEnv的方法调用是通过JNINativeInterface这个调用定义的各种函数，<br>但是JNIEnv在上节<a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>提出了与线程相关的；<br>嗯? 于是陷入思考，线程相关是吧，子线程的调用主线程的env 怎么样，会不会很酸爽呢，是的，会很酸爽，<br>异常结果有空再贴 TODO</p>
+<p>这里抛出这个问题吧，JNIEnv是线程相关的，对，但是别忘记了JavaVm确是Zygote孵化进程的时候，通过AndroidRuntime.cpp 这货 startVm （开启了Vm）–&gt; startReg (注册JNI) ，因此Vm是整个进程中是唯一的，<br>因此解决方案来了，开撕VM， 这货有一个跟线程相关的方法，AttachCurrentThread 和 DetachCurrentThread这对双胞胎方法，ok。</p>
+<p>查看（java_vm_ext.cc)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">AttachCurrentThread</span><span class="params">(JavaVM* vm,JNIEnv** env,<span class="keyword">void</span>* thr_args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> AttachCurrentThreadInternal(vm,env,thr_args,<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">DetachCurrentThread</span><span class="params">(JavaVM* vm)</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(vm==<span class="literal">nullptr</span> || Thread::Current==<span class="literal">nullptr</span>)&#123;</span><br><span class="line">     <span class="keyword">return</span> JNI_ERR;</span><br><span class="line">  &#125;</span><br><span class="line">        <span class="comment">// TODO 其实看到这里，我觉得你应该就可以把JavaVM 和 Runtime 这厮 联系起来，说不好八百年他们是一家，或许有蛋生鸡，鸡生蛋的祖辈关系，如果想了解 ---- &gt; 请查看AndroidRuntime.cpp --&gt; AppRuntime.cpp ---&gt; startVm --&gt;startReg 这条主线。</span></span><br><span class="line">  JavaVMExt* raw_vm = (JavaVMExt*) vm;</span><br><span class="line">  Runtime* runtime =raw_vm-&gt;GetRuntime();</span><br><span class="line">  runtime-&gt;DetachCurrentThread();</span><br><span class="line">  <span class="keyword">return</span> JNI_OK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK 上诉就基本上解决了线程的问题，那么接下来，就把知识点总结一下吧；<br>还是那条主线，C/C++怎么回调给Java方法啊，开下一个主题{@link 是时候展示真正的技术了}</p>
+<h3 id="是时候展示真正的技术了"><a href="#是时候展示真正的技术了" class="headerlink" title="是时候展示真正的技术了"></a>是时候展示真正的技术了</h3><p>该层为Java定义的一个方法用来接收C++层的数据回调。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.hash.jni.demo;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JniHelper</span></span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">void</span> getResultFromC++(<span class="keyword">int</span> a, String s)&#123;</span><br><span class="line">           <span class="comment">//....</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是C++层的常规操作，主要就是注意一个主线：<br><code>MAIN_THREAD</code><br><code>JavaVM</code> <code>AttachCurrentThread</code> <code>DetachCurrentThread</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"JNICallBack.h"</span></span></span><br><span class="line">JNICallBack::JNICallBack(JavaVM* vm,JNIEnv* env,jobject jobj)&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;env=env;</span><br><span class="line">        <span class="keyword">this</span>-&gt;obj=jobj;</span><br><span class="line">        <span class="keyword">this</span>-&gt;vm=vm;</span><br><span class="line">        <span class="comment">//1.获取对应的jclass</span></span><br><span class="line">        jclass clazz=env-&gt;GetObjectClass(obj);</span><br><span class="line">        <span class="comment">//2.获取methodid</span></span><br><span class="line">        method=env-&gt;GetMethodID(clazz,<span class="string">"getResultFromC"</span>,<span class="string">"(ILjava/lang/String;)V"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">JNICallBack::~JNICallBack()&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">JNICallBack::callBack</span><span class="params">(<span class="keyword">int</span> type,jint a,jstring s)</span></span>&#123;</span><br><span class="line">        <span class="comment">//type 是用来区分当前是主线程还是子线程的，</span></span><br><span class="line">      <span class="keyword">if</span>(type==MAIN_THREAD)&#123;</span><br><span class="line">            env-&gt;CallVoidMethod(obj,method,a,s);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       JNIEnv* jniEnv;</span><br><span class="line">       <span class="comment">//TODO 如何拿JavaVM 呢？ 考虑一个加载时机问题，System.loadLibrary(""); 该方法紧接着就会调用JNI_OnLoad 这是一条线索，该方法中可以拿到JavaVM* 指针</span></span><br><span class="line">       <span class="keyword">if</span>(vm-&gt;AttachCurrentThread(&amp;jniEnv,<span class="literal">NULL</span>)!=JNI_OK)&#123;</span><br><span class="line">           LOGD(<span class="string">"can not attach current thread"</span>);</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//真正实现回调了，那么上诉的java方法getResultFromC就可以接收来自C的大礼包；</span></span><br><span class="line">       jniEnv-&gt;CallVoidMethod(obj,method,a,s);    </span><br><span class="line">       vm-&gt;DetachCurrentThread();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取JavaVM的途径</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line">        <span class="function">jint <span class="title">JNI_OnLoad</span><span class="params">(JavaVM* vm,<span class="keyword">void</span>* versered)</span></span>&#123;</span><br><span class="line">            <span class="comment">//...</span></span><br><span class="line">            <span class="keyword">this</span>-&gt;vm=vm;</span><br><span class="line">            JNIEnv* env=<span class="literal">NULL</span>;</span><br><span class="line">            <span class="keyword">if</span>(vm-&gt;GetEnv((<span class="keyword">void</span>**)&amp;env,JNI_VERSION_1_6)!=JNI_OK)&#123;</span><br><span class="line">                <span class="keyword">return</span> JNI_ERROR;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> JNI_VERSION_1_6;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;android/log.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TAG <span class="meta-string">"HASH"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAIN_THREAD 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGD(FORMAT,...)__android_log_print(ANDROID_LOG_DEBUG,FORMAT,TAG,##__VA_ARGS__);</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JNICallBack</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    JavaVM* vm=<span class="literal">NULL</span>;</span><br><span class="line">    JNIEnv* env=<span class="literal">NULL</span>;</span><br><span class="line">    jobject obj=<span class="literal">NULL</span>;</span><br><span class="line">    jmethodID method;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">     JNICallBack(JavaVM* vm,JNIEnv* env,jobjet jobj);</span><br><span class="line">     ~JNICallBack();</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">callBack</span><span class="params">(<span class="keyword">int</span> type,jint a,jstring s)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/29/JNI-CallBack/" data-id="ck9nrihbz0000zk3b5zytgx53" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-JNI" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/29/JNI/" class="article-date">
+  <time datetime="2020-04-29T09:00:43.000Z" itemprop="datePublished">2020-04-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/29/JNI/">JNI 学习 阶段（1）—基础概念介绍</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="JNI-定义："><a href="#JNI-定义：" class="headerlink" title="JNI 定义："></a>JNI 定义：</h3><p>JNI (Java Native Inteface), Java 与 Native 层通信的接口；<br>背景知识：Android的FrameWork 层大多数采用了Java语言来编写，但是Android系统的非FrameWork层大多数采用了C/C++代码来实现，<br>Java代码无法直接与C/C++层进行沟通，因此才诞生了JNI这个桥梁，让Java和C/C++进行通信以及交互。</p>
+<h3 id="JNI中很重要的两个概念：JNIEnv-和-JavaVm："><a href="#JNI中很重要的两个概念：JNIEnv-和-JavaVm：" class="headerlink" title="JNI中很重要的两个概念：JNIEnv 和 JavaVm："></a>JNI中很重要的两个概念：JNIEnv 和 JavaVm：</h3><p>JNIEnv：可以理解是一个上下文，因为JNIEnv是与线程绑定的，因此如果我们在执行程序的时候，线程执行任务的时候就应该是和JNIEnv 进行唯一绑定了，至少线程知道是为了哪个进行服务了。<br>JavaVm：JavaVm就是Java虚拟机，这是个很重要的概念，因为我们Android系统从开机启动的时候，会创建JavaVm这个实例，至于JavaVm是不是一个进程这个有待验证（TODO），那么JavaVm是全局唯一的，是所有线程共享的。</p>
+<h3 id="JNI中动态注册和静态注册"><a href="#JNI中动态注册和静态注册" class="headerlink" title="JNI中动态注册和静态注册"></a>JNI中动态注册和静态注册</h3><p>1.静态注册的方式如下： </p>
+<p>特点：以Java_com_xxx_xxx_Function(JNIEnv* env,jobject instance)形式 进行静态Native方法的声明</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line">   JNIExport <span class="keyword">void</span> </span><br><span class="line">   <span class="function">JNICALL <span class="title">Java_org_hash_jni_demo_add</span><span class="params">(JNIEnv* env,jobject instance,<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.动态注册的方式如下：<br>     需要了解的就是一个JNINativeMethod 的结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">      <span class="keyword">const</span> <span class="keyword">char</span>* name; <span class="comment">//native 方法的名字</span></span><br><span class="line">      <span class="keyword">const</span> <span class="keyword">char</span>* sign; <span class="comment">//方法的签名 比如 c/c++ ("(II)V") --&gt; java void (int a ,int b);</span></span><br><span class="line">      (<span class="keyword">void</span>*) method;<span class="comment">// 函数指针 -&gt;指向定义的函数</span></span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p> 那么动态注册native方法， 需要声明一个JNINativeMethod 数组，这个数组中的每一个元素就是我们需要声明的native方法</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line"></span><br><span class="line">            <span class="function">jint <span class="title">add</span><span class="params">(JNIEnv* env, jobject instance,<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> a+b;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="function">jstring <span class="title">getString</span><span class="params">(JNIEnv* env,jobject instance)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> env-&gt;NewStringUTF(<span class="string">"hello"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> JNINativeMethod gMethod[] =&#123;</span><br><span class="line">                &#123;<span class="string">"add"</span>, <span class="string">"(II)I"</span>,add&#125;,</span><br><span class="line">                &#123;<span class="string">"getString"</span>,<span class="string">"()Ljava/lang/String;"</span>,getString&#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            jint JNI_OnLoad(JavaVm* vm,<span class="keyword">void</span>* versered)&#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//声明一个JNIEnv* 指针</span></span><br><span class="line">                JNIEnv* env;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(vm-&gt;GetEnv((<span class="keyword">void</span>**)&amp;env,JNI_VERSION_1_6)!=JNI_OK)&#123; <span class="comment">//通过这一步env就被赋值了，好比一个空对象就被赋值了，当然赋值肯定是跟当前线程相关的。</span></span><br><span class="line">                    <span class="keyword">return</span> JNI_ERR;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//调用env-&gt;RegisterNatives()完成方法的注册；</span></span><br><span class="line"></span><br><span class="line">                jclass clazz = env-&gt;FindClass(<span class="string">"org/hash/jni/JniHelper"</span>); <span class="comment">//假设这些方法都是在JniHelper中注册的。</span></span><br><span class="line"></span><br><span class="line">                env-&gt;RegisterNatives(clazz,gMethod,<span class="keyword">sizeof</span>(gMethod)/<span class="keyword">sizeof</span>(gMethod[<span class="number">0</span>]));</span><br><span class="line">                <span class="comment">//关于方法数计算 ： sizeof(gMethod)/sizeof(gMethod[0]);</span></span><br><span class="line">                <span class="comment">// JNINativeMethod是一个结构体，因此一个结构体字节大小就应该是里面所有成员属性的字节相加，char* name 一个char指针，4个字节</span></span><br><span class="line">                <span class="comment">// char* sign同理也是4个字节，void* method 同样也是4个字节，那么一个JNINativeMethod结构体就是12个字节，通过sizeof(gMethod[0]) 就可以求出为12个字节，</span></span><br><span class="line">                <span class="comment">//同理该数组的大小通过sizeof(gMethod) 求出n*12 n 为注册的方法个数。</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> JNI_VERSION_1_6;</span><br><span class="line">                </span><br><span class="line">                      &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：<br>    动态注册方法不需要写冗长的Java_cxxxxx_xxx的方法名。动态注册运行时效率比较高<br>    静态注册必须遵循Java_xxx_命名规则，名字过长。运行时查找效率地下。</p>
+<p>​<br>​    </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/29/JNI/" data-id="ck9nrihc30001zk3b5noldeq0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/JNI/" style="font-size: 20px;">JNI</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/05/01/UDP%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%8A%A5%E5%8D%8F%E8%AE%AE/">UDP用户数据报协议</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/30/tcp/">TCP协议</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/29/JNI-CallBack/">JNI 学习阶段（2）-Java与C/C++之间的相互回调</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/29/JNI/">JNI 学习 阶段（1）—基础概念介绍</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 HashWaney<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

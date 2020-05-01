@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>JNI 学习阶段（2）-Java与C/C++之间的相互回调 | HashWaney</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="背景知识   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C&#x2F;C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C&#x2F;C++层进行安排， 那么问题来了，C&#x2F;C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？ CallXXXMethod,FindCla">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JNI 学习阶段（2）-Java与C&#x2F;C++之间的相互回调">
+<meta property="og:url" content="http://yoursite.com/2020/04/29/JNI-CallBack/index.html">
+<meta property="og:site_name" content="HashWaney">
+<meta property="og:description" content="背景知识   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C&#x2F;C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C&#x2F;C++层进行安排， 那么问题来了，C&#x2F;C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？ CallXXXMethod,FindCla">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-29T10:17:26.000Z">
+<meta property="article:modified_time" content="2020-04-29T12:38:43.082Z">
+<meta property="article:author" content="HashWaney">
+<meta property="article:tag" content="JNI">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="HashWaney" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">HashWaney</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Action and Thinking</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-JNI-CallBack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/29/JNI-CallBack/" class="article-date">
+  <time datetime="2020-04-29T10:17:26.000Z" itemprop="datePublished">2020-04-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JNI 学习阶段（2）-Java与C/C++之间的相互回调
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h3><p>   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C/C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C/C++层进行安排， 那么问题来了，C/C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？</p>
+<h3 id="CallXXXMethod-FindClass-GetMethodID的介绍"><a href="#CallXXXMethod-FindClass-GetMethodID的介绍" class="headerlink" title="CallXXXMethod,FindClass,GetMethodID的介绍"></a>CallXXXMethod,FindClass,GetMethodID的介绍</h3><p>自然JNIEnv这个上下文充当这个角色，可以完成相关的C/C++的回调工作，当然JNIEnv是和线程相关的具体可以看<br><a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>这一章介绍。</p>
+<p>具体来看：JNIEnv (jni.h)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">JNIEnv</span>&#123;</span></span><br><span class="line">        <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterfaces</span>* <span class="title">functions</span>;</span>    </span><br><span class="line">        <span class="meta">#<span class="meta-keyword">if</span> defined(__cplusplus)</span></span><br><span class="line">            </span><br><span class="line">            .....</span><br><span class="line">            <span class="comment">// 类似Class.forName();Java 不知这两个有没有关系 native 方法没有研究 TODO 有空研究一下</span></span><br><span class="line">            <span class="function">jclass <span class="title">FindClass</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* name)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;FindClass(<span class="keyword">this</span>,name);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 根据clazz 和 方法名 以及方法签名来找到方法ID</span></span><br><span class="line">            <span class="function">jmethodID <span class="title">GetMethodID</span><span class="params">(jclass clazz,<span class="keyword">const</span> <span class="keyword">char</span>* name,<span class="keyword">char</span>* sign)</span></span></span><br><span class="line"><span class="function">            </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> functions-&gt;GetMethodID(<span class="keyword">this</span>,clazz,name,sign);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//自然找到类 找到了方法Id 就是要调用这个类的方法 XXX 代表返回值 如果是无返回值则xxx = Void 即CallVoidMethod 如果返回值为Object 则jobject CallObjectMethod 其他类推</span></span><br><span class="line">            <span class="function"><span class="keyword">void</span> <span class="title">CallXXXMethod</span><span class="params">(jobject obj,jmethodID methodId,...)</span></span>&#123;</span><br><span class="line">                va_list args; <span class="comment">//可变参数</span></span><br><span class="line">                va_start(args,methodId);<span class="comment">//初始化变元指针</span></span><br><span class="line">                functions-&gt;CallVoidMethodV(<span class="keyword">this</span>,obj,methodId,args);</span><br><span class="line">                va_end(args);<span class="comment">//取完参数，保证堆栈的恢复</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：JNIEnv这货里面竟然有一个JNINativeInteface指针 该指针是一个结构体，里面定义了大量的函数，原来env大部分的操作其实是在操作JNINativeInterface指针，这货才是爸爸，你懂吗，直接是操作了C层定义的函数，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">//  Table of interface function pointers. </span></span><br><span class="line">    <span class="comment">//   What? 函数指针接口表，是这个意思吗；</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">JNINativeInterface</span>&#123;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">        jint (*GetVersion)(JNIEnv* );</span><br><span class="line"></span><br><span class="line">        jclass (*FindClass)(JNIEnv*, <span class="keyword">const</span> <span class="keyword">char</span>*);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">void</span> (*CallVoidMethod)(JNIEnv*,jobject,jmethodID,...);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//少侠，看到这里是不是似成相识啊，与上面的是不是有点相似，</span></span><br><span class="line">        <span class="comment">//但是看到这里我觉得C就是变态，少写个形参，是错过晚饭时间吗，jint (*GetVersion)(JNIEnv* env); 这样不是更好点吗，</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//好了 闲扯一堆 这里顺便复习一下指针函数和函数指针：</span></span><br><span class="line">        类型说明符 (*函数名)(参数)  ---&gt; 函数指针</span><br><span class="line">        类型说明符  *函数名 (参数)  ---&gt; 指针函数 </span><br><span class="line"></span><br><span class="line">        <span class="comment">// 指针函数 返回的是某一特定的类型指针</span></span><br><span class="line">        <span class="comment">// 函数指针 本质是指针，是指向函数的指针变量，那么指向的函数声明要和函数指针声明要一致，比如int(*fun)(int x);</span></span><br><span class="line">        <span class="keyword">int</span> * f =fun;<span class="comment">//将fun函数的首地址赋值给指针f； 同样都是声明int</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="你以为这样就可以了吗，太天真了吧？"><a href="#你以为这样就可以了吗，太天真了吧？" class="headerlink" title="你以为这样就可以了吗，太天真了吧？"></a>你以为这样就可以了吗，太天真了吧？</h3><p>上诉我们已经知道了JNIEnv的方法调用是通过JNINativeInterface这个调用定义的各种函数，<br>但是JNIEnv在上节<a href="https://hashwaney.github.io/2020/04/29/JNI" target="_blank" rel="noopener">JNI 学习 阶段（1）—基础概念介绍</a>提出了与线程相关的；<br>嗯? 于是陷入思考，线程相关是吧，子线程的调用主线程的env 怎么样，会不会很酸爽呢，是的，会很酸爽，<br>异常结果有空再贴 TODO</p>
+<p>这里抛出这个问题吧，JNIEnv是线程相关的，对，但是别忘记了JavaVm确是Zygote孵化进程的时候，通过AndroidRuntime.cpp 这货 startVm （开启了Vm）–&gt; startReg (注册JNI) ，因此Vm是整个进程中是唯一的，<br>因此解决方案来了，开撕VM， 这货有一个跟线程相关的方法，AttachCurrentThread 和 DetachCurrentThread这对双胞胎方法，ok。</p>
+<p>查看（java_vm_ext.cc)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">AttachCurrentThread</span><span class="params">(JavaVM* vm,JNIEnv** env,<span class="keyword">void</span>* thr_args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> AttachCurrentThreadInternal(vm,env,thr_args,<span class="literal">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">DetachCurrentThread</span><span class="params">(JavaVM* vm)</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(vm==<span class="literal">nullptr</span> || Thread::Current==<span class="literal">nullptr</span>)&#123;</span><br><span class="line">     <span class="keyword">return</span> JNI_ERR;</span><br><span class="line">  &#125;</span><br><span class="line">        <span class="comment">// TODO 其实看到这里，我觉得你应该就可以把JavaVM 和 Runtime 这厮 联系起来，说不好八百年他们是一家，或许有蛋生鸡，鸡生蛋的祖辈关系，如果想了解 ---- &gt; 请查看AndroidRuntime.cpp --&gt; AppRuntime.cpp ---&gt; startVm --&gt;startReg 这条主线。</span></span><br><span class="line">  JavaVMExt* raw_vm = (JavaVMExt*) vm;</span><br><span class="line">  Runtime* runtime =raw_vm-&gt;GetRuntime();</span><br><span class="line">  runtime-&gt;DetachCurrentThread();</span><br><span class="line">  <span class="keyword">return</span> JNI_OK</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK 上诉就基本上解决了线程的问题，那么接下来，就把知识点总结一下吧；<br>还是那条主线，C/C++怎么回调给Java方法啊，开下一个主题{@link 是时候展示真正的技术了}</p>
+<h3 id="是时候展示真正的技术了"><a href="#是时候展示真正的技术了" class="headerlink" title="是时候展示真正的技术了"></a>是时候展示真正的技术了</h3><p>该层为Java定义的一个方法用来接收C++层的数据回调。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.hash.jni.demo;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JniHelper</span></span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">void</span> getResultFromC++(<span class="keyword">int</span> a, String s)&#123;</span><br><span class="line">           <span class="comment">//....</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是C++层的常规操作，主要就是注意一个主线：<br><code>MAIN_THREAD</code><br><code>JavaVM</code> <code>AttachCurrentThread</code> <code>DetachCurrentThread</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"JNICallBack.h"</span></span></span><br><span class="line">JNICallBack::JNICallBack(JavaVM* vm,JNIEnv* env,jobject jobj)&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;env=env;</span><br><span class="line">        <span class="keyword">this</span>-&gt;obj=jobj;</span><br><span class="line">        <span class="keyword">this</span>-&gt;vm=vm;</span><br><span class="line">        <span class="comment">//1.获取对应的jclass</span></span><br><span class="line">        jclass clazz=env-&gt;GetObjectClass(obj);</span><br><span class="line">        <span class="comment">//2.获取methodid</span></span><br><span class="line">        method=env-&gt;GetMethodID(clazz,<span class="string">"getResultFromC"</span>,<span class="string">"(ILjava/lang/String;)V"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">JNICallBack::~JNICallBack()&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">JNICallBack::callBack</span><span class="params">(<span class="keyword">int</span> type,jint a,jstring s)</span></span>&#123;</span><br><span class="line">        <span class="comment">//type 是用来区分当前是主线程还是子线程的，</span></span><br><span class="line">      <span class="keyword">if</span>(type==MAIN_THREAD)&#123;</span><br><span class="line">            env-&gt;CallVoidMethod(obj,method,a,s);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">       JNIEnv* jniEnv;</span><br><span class="line">       <span class="comment">//TODO 如何拿JavaVM 呢？ 考虑一个加载时机问题，System.loadLibrary(""); 该方法紧接着就会调用JNI_OnLoad 这是一条线索，该方法中可以拿到JavaVM* 指针</span></span><br><span class="line">       <span class="keyword">if</span>(vm-&gt;AttachCurrentThread(&amp;jniEnv,<span class="literal">NULL</span>)!=JNI_OK)&#123;</span><br><span class="line">           LOGD(<span class="string">"can not attach current thread"</span>);</span><br><span class="line">           <span class="keyword">return</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">//真正实现回调了，那么上诉的java方法getResultFromC就可以接收来自C的大礼包；</span></span><br><span class="line">       jniEnv-&gt;CallVoidMethod(obj,method,a,s);    </span><br><span class="line">       vm-&gt;DetachCurrentThread();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取JavaVM的途径</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line">        <span class="function">jint <span class="title">JNI_OnLoad</span><span class="params">(JavaVM* vm,<span class="keyword">void</span>* versered)</span></span>&#123;</span><br><span class="line">            <span class="comment">//...</span></span><br><span class="line">            <span class="keyword">this</span>-&gt;vm=vm;</span><br><span class="line">            JNIEnv* env=<span class="literal">NULL</span>;</span><br><span class="line">            <span class="keyword">if</span>(vm-&gt;GetEnv((<span class="keyword">void</span>**)&amp;env,JNI_VERSION_1_6)!=JNI_OK)&#123;</span><br><span class="line">                <span class="keyword">return</span> JNI_ERROR;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> JNI_VERSION_1_6;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;android/log.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TAG <span class="meta-string">"HASH"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAIN_THREAD 1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGD(FORMAT,...)__android_log_print(ANDROID_LOG_DEBUG,FORMAT,TAG,##__VA_ARGS__);</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JNICallBack</span>&#123;</span></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">    JavaVM* vm=<span class="literal">NULL</span>;</span><br><span class="line">    JNIEnv* env=<span class="literal">NULL</span>;</span><br><span class="line">    jobject obj=<span class="literal">NULL</span>;</span><br><span class="line">    jmethodID method;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span>:</span><br><span class="line">     JNICallBack(JavaVM* vm,JNIEnv* env,jobjet jobj);</span><br><span class="line">     ~JNICallBack();</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">callBack</span><span class="params">(<span class="keyword">int</span> type,jint a,jstring s)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/04/29/JNI-CallBack/" data-id="ck9nrihbz0000zk3b5zytgx53" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/04/30/tcp/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          TCP协议
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/04/29/JNI/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">JNI 学习 阶段（1）—基础概念介绍</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/JNI/" style="font-size: 20px;">JNI</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/05/01/UDP%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%8A%A5%E5%8D%8F%E8%AE%AE/">UDP用户数据报协议</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/30/tcp/">TCP协议</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/29/JNI-CallBack/">JNI 学习阶段（2）-Java与C/C++之间的相互回调</a>
+          </li>
+        
+          <li>
+            <a href="/2020/04/29/JNI/">JNI 学习 阶段（1）—基础概念介绍</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 HashWaney<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
