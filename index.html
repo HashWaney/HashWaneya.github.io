@@ -118,23 +118,22 @@
 <li>同步方法</li>
 </ul>
 <p><code>Synchronized</code> 同步监视器</p>
-<p>Synchronized的作用域：</p>
+<p><strong>Synchronized的作用域：</strong></p>
 <ul>
 <li><p>作用在代码块上：只是锁定了该代码块，代码块外面的代码还是可以被访问的，如果想要达到作用在成员方法的效果，可以锁定this引用</p>
-<ul>
-<li><p>synchronized(this){</p>
-<p>​    …..</p>
-<p>}</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> synchronized(<span class="keyword">this</span>)&#123;</span><br><span class="line">		.....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
 </li>
 </ul>
-</li>
-<li><p>作用在成员方法上：某一时刻只能有一个线程执行该Synchronized方法</p>
-</li>
+<ul>
+<li>作用在成员方法上：某一时刻只能有一个线程执行该Synchronized方法</li>
 </ul>
 <ul>
 <li>作用在静态方法上—–&gt;同步锁就是方法所在类的class对象，并不是synchronized方法所在的对象，意味着一旦被调用，该线程锁定的是synchronized方法所在对象的Class对象，其他线程无法调用该方法。直到该方法执行完之后释放了锁，其他线程才有可能调用。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;1 synchronized 锁定static 方法 锁class --- 》类锁</span><br><span class="line">public synchronized static void print()&#123;</span><br><span class="line">    &#x2F;&#x2F;.....</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;2 synchronized 锁定成员方法 锁定的是对象 ----》对象锁 方法锁</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;3 synchronized 作用在代码块上, 锁定的是代码块</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1 synchronized 锁定static 方法 锁class --- 》类锁</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//.....</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//2 synchronized 锁定成员方法 锁定的是对象 ----》对象锁 方法锁</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//3 synchronized 作用在代码块上, 锁定的是代码块</span></span><br></pre></td></tr></table></figure>
 
 
 
@@ -147,7 +146,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9ptx3qq0004h73b0tuu0kds" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9pu04qt0004i23b43dahsit" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -216,7 +215,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9ptx3qu0009h73bg7vx6rtx" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9pu04qx0009i23bhd6sbn4t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -266,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9ptx3qs0006h73b9aoe08ns" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9pu04qv0006i23b5gle195t" class="article-share-link">Share</a>
       
       
     </footer>
@@ -411,7 +410,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9ptx3qr0005h73bg4pwfsty" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9pu04qu0005i23b55h74d8v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
@@ -476,7 +475,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9ptx3qi0000h73b8sl0cje2" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9pu04ql0000i23bhc5ph3e1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -531,7 +530,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9ptx3qm0001h73bhbie52sf" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9pu04qq0001i23bbsqo4d4g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
