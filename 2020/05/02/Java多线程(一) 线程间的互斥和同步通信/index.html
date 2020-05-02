@@ -7,15 +7,15 @@
   
   <title>Java多线程（一） 线程间的互斥和同步通信 | HashWaney</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Thread 线程Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程tar run方法的源码 1234567@Overridepublic void run()&amp;#123;    if(target!&#x3D;null)&amp;#123;        target.run();    &amp;#125;    &#x2F;&#x2F;target 实则为Runnable接口，用来表示具体执行的">
+  <meta name="description" content="Thread 线程Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程 run方法的源码 1234567@Overridepublic void run()&amp;#123;    if(target!&#x3D;null)&amp;#123;        target.run();    &amp;#125;    &#x2F;&#x2F;target 实则为Runnable接口，用来表示具体执行的任务&amp;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java多线程（一） 线程间的互斥和同步通信">
 <meta property="og:url" content="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/index.html">
 <meta property="og:site_name" content="HashWaney">
-<meta property="og:description" content="Thread 线程Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程tar run方法的源码 1234567@Overridepublic void run()&amp;#123;    if(target!&#x3D;null)&amp;#123;        target.run();    &amp;#125;    &#x2F;&#x2F;target 实则为Runnable接口，用来表示具体执行的">
+<meta property="og:description" content="Thread 线程Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程 run方法的源码 1234567@Overridepublic void run()&amp;#123;    if(target!&#x3D;null)&amp;#123;        target.run();    &amp;#125;    &#x2F;&#x2F;target 实则为Runnable接口，用来表示具体执行的任务&amp;">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-05-02T13:56:35.000Z">
-<meta property="article:modified_time" content="2020-05-02T16:54:31.725Z">
+<meta property="article:modified_time" content="2020-05-02T16:56:01.824Z">
 <meta property="article:author" content="HashWaney">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
@@ -93,8 +93,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="Thread-线程"><a href="#Thread-线程" class="headerlink" title="Thread 线程"></a>Thread 线程</h3><p>Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程tar</p>
-<p>run方法的源码</p>
+        <h3 id="Thread-线程"><a href="#Thread-线程" class="headerlink" title="Thread 线程"></a>Thread 线程</h3><p>Java 语言用Thread来描述一个线程，通过Thread类的start方法来开启一个线程</p>
+<p><strong>run方法的源码</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(target!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        target.run();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//target 实则为Runnable接口，用来表示具体执行的任务</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>创建线程的两种传统方式</p>
@@ -163,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9pv9c0w0004k43bh8b144nr" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9pvd5yk0004lj3bdm00dqb9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
