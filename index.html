@@ -117,11 +117,15 @@
 <p>进程是资源分配的基本单位，线程是程序执行的基本单位</p>
 <p>进程拥有自己的资源空间，每启动一个进程，系统就会为它分配地址空间，而线程与CPU资源分配无关，多个线程共享同一进程内的资源，各线程地址空间相互独立；</p>
 <p>一个进程包含若干个线程；</p>
+<p><strong>优劣</strong></p>
+<p>1.线程之间通信更方便，同一进程下的线程共享全局变量，静态变量等数据，而进程之间的通信需要通过IPC进行；</p>
+<p>2.线程调度与切换比进程快很多，同时创建一个线程的开销比进程要小很多；</p>
+<p>3.多进程程序更加健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉，并不会对另外一个进程造成影响，因为进程有自己独立的地址空间；</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9pojvkh00035z3b885n2d0n" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9pos4bs00057k3b9tr444bc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -171,7 +175,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9pojvke00015z3bd8hvclgs" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9pos4bt00067k3bd71p62ed" class="article-share-link">Share</a>
       
       
     </footer>
@@ -316,7 +320,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9pojvka00005z3ba41qf9zj" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9pos4bs00047k3b616yftpp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
@@ -381,7 +385,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9pojvkj00055z3b329v493g" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9pos4bk00007k3b9fzd1ari" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -436,7 +440,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9pojvki00045z3b0eao69s6" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9pos4bp00017k3b97coe23i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
