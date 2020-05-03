@@ -69,6 +69,132 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Java线程池Callable和Future" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/" class="article-date">
+  <time datetime="2020-05-03T06:01:35.000Z" itemprop="datePublished">2020-05-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>线程池概念和Executors类的应用</strong></p>
+<p>在TCP服务器编程模型中，当一个客户端连接到服务器，服务器要起一个线程为之服务，当客户端的会话结束后，</p>
+<p>线程也就结束。</p>
+<p>即每一个客户端连接，服务器就要为之创建一个新的线程。</p>
+<p>如果访问服务器的客户端很多，那么服务器就会不断的创建和销毁线程，那么这样就严重影响服务器的性能；</p>
+<p>怎么解决：</p>
+<p>可以创建一些线程，这些线程构成的集合就称为线程池，当服务器接收到一个客户端请求后，就从线程池中取出一个空闲的线程，服务完成之后，不关闭该线程，而是将该线程还回线程池中。</p>
+<p>在线程池的编程模式下，任务是交给整个线程池的，而不是直接交给某个线程；</p>
+<p>线程池拿到任务后，就在内部找有空闲的线程，再把任务交给某个空闲的线程，</p>
+<p><strong>任务是交给整个线程池，但是可以同时向一个线程池中提交多个任务。</strong></p>
+<p>#####一些常用的线程池API</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建固定大小的线程池</span></span><br><span class="line">ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">3</span>);</span><br><span class="line">threadPool.execute(Runnable runnable);</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建缓存的线程池（如果线程不够自动创建新的线程满足服务）</span></span><br><span class="line">ExecutorService threadPool = Executors.newCachedThreadPool();</span><br><span class="line">threadPool.execute(Runnable runnable);</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建单一线程池（线程池里面只有一个线程，如果意外死亡，那么系统就自动创建一个新的线程来代替）</span></span><br><span class="line">ExecutorService	threadPool = Executors.newSingleThreadExecutor();</span><br><span class="line">threadPool.execute(Runnable runnable);</span><br><span class="line"></span><br><span class="line"><span class="comment">//执行完任务后关闭线程池</span></span><br><span class="line">threadPool.shutdown();</span><br><span class="line"><span class="comment">//不管任务是否完成都关闭线程池</span></span><br><span class="line">threadPool.shutdownNow();</span><br><span class="line"></span><br><span class="line"><span class="comment">//用线程池启动定时器，每隔20秒执行一次任务</span></span><br><span class="line">Executors.newScheduledThreadPool(<span class="number">3</span>).scheudle(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//TODO</span></span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;,<span class="number">20</span>,TimeUnit.SECONDS);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Callable-与-Runnable"><a href="#Callable-与-Runnable" class="headerlink" title="Callable 与 Runnable"></a>Callable 与 Runnable</h4><p>java.lang.Runnable ，是一个接口，声明一个run方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于run()方法返回值为void类型，<strong>so在执行完任务之后无法返回任何结果</strong>。</p>
+<p>Callable位于java.util.concurrent包下，它也是一个接口，在它里面声明了一个方法；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callable</span>&lt;<span class="title">V</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function">V <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exceptions</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出这是一个泛型接口，声明一个call方法，<strong>同时这个方法可以有返回值V，返回的类型就是传递进来的V类型</strong>，当然也可以抛出异常；</p>
+<p>如何使用Callable? 一般情况下是配合ExecutorService来使用的，在ExecutorService接口中声明若干个submit方法的重载版本</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//提交一个实现Callable接口的任务，并且返回了封装了异步计算结果的Future</span></span><br><span class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Callable&lt;T&gt; taks)</span></span>;</span><br><span class="line"><span class="comment">//提交一个实现Runnable接口的任务，并且指定了在调用Future的get方法时返回的result对象</span></span><br><span class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Runnable task,T result)</span></span>;</span><br><span class="line"><span class="comment">//提交一个实现Runnable接口的任务，并且返回封装了异步计算结果的Future</span></span><br><span class="line">Future&lt;?&gt; submit(Runnable task);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h4><p>Future 就是对于具体的Runnable或者Callable任务的<strong>执行结果</strong> 相关操作：进行取消，查询是否完成，获取结果。</p>
+<p>可以通过<strong>get()方法</strong>获取执行结果，<strong>该get()方法会阻塞直到任务返回结果</strong></p>
+<p>Future<V> 接口是用来获取异步计算结果的，说白了就是对具体的Runnable或Callable对象任务执行的结果</p>
+<p>进行获取（<strong>get()</strong> ) , 取消（<strong>cancel()</strong>）,判断是否完成等操作；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt;</span>&#123;</span><br><span class="line">    <span class="comment">//取消任务，如果取消任务成功返会true，如果取消任务失败返回false；</span></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> interrupt：表示取消正在执行却没有执行完毕的任务，</span></span><br><span class="line"><span class="comment">     * true: 可以取消正在执行过程中的任务，</span></span><br><span class="line"><span class="comment">     * false:</span></span><br><span class="line"><span class="comment">     * 1.如果任务已经完成，interrupt =true or false，方法返回false，无法取消已经完成的任务，</span></span><br><span class="line"><span class="comment">     * 2.如果任务正在执行，interrupt=true 方法返回true，interrupt=false，方法返回false</span></span><br><span class="line"><span class="comment">     * 3.如果任务还没执行，interrupt=true or false， 方法返回true</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> interrupt)</span></span>;</span><br><span class="line">    <span class="comment">//表示任务是否被取消成功，如果在任务正常完成前被取消成功，返回true</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancelled</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//表示任务是否已经完成，完成返回true</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">//获取执行结果，会阻塞，会一直等到任务执行完毕之后才返回</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedExecption,ExecutionException</span>;</span><br><span class="line">    <span class="comment">//获取执行结果，如果在指定时间内，还没获取到结果，就直接返回null</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeout,TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException,ExecutionException,TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Future提供三种功能：</p>
+<ul>
+<li>判断任务是否完成；</li>
+<li>能够中断任务；</li>
+<li>能够获取任务执行结果；</li>
+</ul>
+<h4 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureTask</span>&lt;<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>FutureTask类实现了RunnableFuture接口，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Runnable</span>,<span class="title">Future</span>&lt;<span class="title">V</span>&gt;</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>RunnableFuture继承了Runnable接口和Future接口，而FutureTask实现了RunnableFuture接口，所以其可以被当作Runnable被线程执行，也可以作为Future得到Callable的返回值；</p>
+<p><strong>执行状态</strong></p>
+<ul>
+<li>未启动，FutureTask.run() 方法还没有被执行之前，处于未启动状态，创建一个FutureTask，并没有调用run()方法；</li>
+<li>已启动，FutureTask.run()方法被执行的过程中，FutureTask处于已启动状态</li>
+<li>已完成，FutureTask.run()<strong>方法执行完正常结束，或者被取消，或者抛出异常结束</strong>，FutureTask处于已完成状态</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/03/OqIfesop9PyTShr.png" alt=""></p>
+<p>FutureTask方法执行示意图：</p>
+<p><img src="https://i.loli.net/2020/05/03/KsGxZ7n1wNmBFlc.png" alt=""></p>
+<ul>
+<li>当FutureTask处于未启动或者已启动状态时，如果此时调用FutureTask.get() 方法将导致调用线程阻塞</li>
+<li>当FutureTask处于已完成时，执行FutureTask.get()方法导致调用线程立即返回结果，或者抛出异常</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/03/gUSpC1FNZLIozBR.png" alt=""></p>
+<ul>
+<li>当FutureTask处于未启动状态时，执行FutureTask.cancel()方法将会导致此任务永远不会执行，</li>
+<li>当FutureTask处于已启动状态时，执行FutureTask.cancel()方法，如果是cancel(true)将以中断执行此任务线程的方式来试图停止任务，如果取消成功，cancel()返回true，表示任务取消成功，cancel(false)对正在执行的任务线程不产生影响，cancel() 返回false；</li>
+<li>当FutureTask处于已完成状态时，执行cancel()返回false；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> FutureTask&lt;Callable&lt;V&gt; callable)&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Runnable runnable,V result)</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>FutureTask 是Future接口的一个唯一实现类；</p>
+<h4 id="使用实例"><a href="#使用实例" class="headerlink" title="使用实例"></a>使用实例</h4><p>使用Callable，Future，FutureTask最大的好处就是，通过这种方式创建线程， <strong>能够返回结果</strong>；</p>
+<p>场景：计算一个数据，而这个数据的计算比较耗时，后面的程序需要使用到这个数据结果。</p>
+<p>​            考虑Thread，Callable ；Callable是有返回值的，首选；</p>
+<p>​             开启一个线程去计算，主线程继续做其他的事，后面需要使用到这个数据，使用Future获取就可以了。</p>
+<ul>
+<li><p><strong>使用Callable + Future获取执行结果</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Task</span> <span class="keyword">implements</span> <span class="title">Callable</span>&lt;<span class="title">Integer</span>&gt;</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"计算结果中...."</span>);</span><br><span class="line">        Thread.sleep(<span class="number">3000</span>);<span class="comment">//模拟耗时操作</span></span><br><span class="line">        <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">100</span>;i++)&#123;</span><br><span class="line">            sum+=i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="comment">//创建线程池</span></span><br><span class="line">    ExecutorService executor= Executors.newCachedThreadPool();</span><br><span class="line">    <span class="comment">//创建Callable对象任务</span></span><br><span class="line">    Task task =<span class="keyword">new</span> Task();</span><br><span class="line">    <span class="comment">//提交任务并获取执行结果</span></span><br><span class="line">    Future&lt;Integer&gt; result = executor.submit(task);</span><br><span class="line">    <span class="comment">//关闭线程池</span></span><br><span class="line">    executor.shutdown();</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"主线程执行"</span>);</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(result.get()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.println(<span class="string">"执行结果为："</span>+result.get());</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"未获取到结果"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.err.println(<span class="string">"任务执行完毕"</span>);</span><br><span class="line">&#125;</span><br><span class="line">实验结果</span><br><span class="line">--------</span><br><span class="line">计算结果中....</span><br><span class="line">主线程执行</span><br><span class="line">执行结果为：<span class="number">499500</span></span><br><span class="line">任务执行完毕</span><br><span class="line">--------</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>使用Callable+FutureTask获取执行结果</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Task</span> <span class="keyword">implements</span> <span class="title">Callable</span>&lt;<span class="title">Integer</span>&gt;</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">call</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"计算结果中...."</span>);</span><br><span class="line">        Thread.sleep(<span class="number">3000</span>);<span class="comment">//模拟耗时操作</span></span><br><span class="line">        <span class="keyword">int</span> sum=<span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">100</span>;i++)&#123;</span><br><span class="line">            sum+=i;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="comment">//第一种方式</span></span><br><span class="line">    ExecutorService executor = Executors.newCacheThreadPool();</span><br><span class="line">    Task task =<span class="keyword">new</span> Task();</span><br><span class="line">    FutureTask&lt;Integer&gt; futureTask = <span class="keyword">new</span> FutureTask&lt;Integer&gt;(task);</span><br><span class="line">    <span class="comment">//FutureTask 作为 Future 加入到线程池中</span></span><br><span class="line">    executor.submit(futureTask);</span><br><span class="line">    executor.shutdown();</span><br><span class="line">    <span class="comment">//第二种方式</span></span><br><span class="line">    <span class="comment">//Task task =new Task();</span></span><br><span class="line">    <span class="comment">//FutureTask&lt;Integer&gt; futureTask =new FutureTask&lt;Integer&gt;(task);</span></span><br><span class="line">    <span class="comment">//FutureTask 作为 Runnable 加入到线程中</span></span><br><span class="line">    <span class="comment">//Thread thread =new Thread(futureTask);</span></span><br><span class="line">    <span class="comment">//thread.start();</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        Thread.sleep(<span class="number">100</span>);</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.err.println(<span class="string">"主线程执行"</span>);</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">       <span class="keyword">if</span>(futureTask.get()!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        	System.out.println(<span class="string">"futureTask 执行结果为："</span>+futureTask.get());   </span><br><span class="line">       &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">           System.out.println(<span class="string">"futureTask.get()未获取到结果"</span>);</span><br><span class="line">       &#125;</span><br><span class="line">    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">"所有任务执行完毕"</span>);</span><br><span class="line">&#125;</span><br><span class="line">执行结果：</span><br><span class="line">----</span><br><span class="line">计算结果中....</span><br><span class="line">主线程执行</span><br><span class="line">futureTask 执行结果为： <span class="number">499500</span></span><br><span class="line">所有任务执行完毕    </span><br><span class="line">----</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<p>  <strong>实现Runnable接口和实现Callable接口的区别</strong></p>
+<ul>
+<li>Runnable自从jdk1.1就有了，Callable是1.5之后有的</li>
+<li>Callable规定的方法是call(), Runnable规定的方法是run();</li>
+<li>Callable的任务执行后可返回值，而Runnable的任务是无返回值的；</li>
+<li>call方法可以抛出异常，run方法不能</li>
+<li>运行Callable任务可以拿到一个Future对象，表示异步执行计算的结果，在这个过程中，会检查计算是否完成，等待（阻塞手段）计算的完成，并获取计算的结果。因此通过Future对象可以了解任务的执行过程，可取消任务的执行，还可以获取执行的结果</li>
+<li>加入到线程池运行，Runnable使用ExecutorService的execute方法，而Callable使用的是submit提交。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/" data-id="ck9qunz140005ev3bgkxagor4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Java多线程(二) 同步线程分组问题" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" class="article-date">
@@ -114,7 +240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9qnbht500045c3bg70w48pi" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9qunz150006ev3b7p7walyh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -234,7 +360,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9qnbht600055c3b90509l13" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/" data-id="ck9qunz0z0001ev3b0bst39d7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -299,11 +425,81 @@
 <p>1.线程之间通信更方便，同一进程下的线程共享全局变量，静态变量等数据，而进程之间的通信需要通过IPC进行；</p>
 <p>2.线程调度与切换比进程快很多，同时创建一个线程的开销比进程要小很多；</p>
 <p>3.多进程程序更加健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉，并不会对另外一个进程造成影响，因为进程有自己独立的地址空间；</p>
+<h4 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h4><p>@<a href="https://www.cnblogs.com/marsitman/p/11228684.html" target="_blank" rel="noopener">https://www.cnblogs.com/marsitman/p/11228684.html</a></p>
+<p>生命周期包含5个阶段：新建，就绪，运行，阻塞，销毁</p>
+<ul>
+<li><p>新建：new方法， – new Thread();</p>
+</li>
+<li><p>就绪：调用start()方法，这时候线程处于等待CPU分配资源的阶段，谁先抢到CPU资源，谁先开始；</p>
+</li>
+<li><p>运行：当就绪的线程被调度并获得CPU资源时候，便进入运行状态，run方法定义了线程的操作和功能</p>
+</li>
+<li><p>阻塞：在运行状态的时候，可能由于某些原因导致运行状态变成了阻塞状态，比如sleep(), wait()之后线程处于阻塞状态，这个时候需要其他机制将处于阻塞状态的线程唤醒，比如调用notify/notifyAll方法，唤醒的线程不会立即执行run方法，而是<strong>再次等待CPU分配资源进入运行状态。</strong></p>
+</li>
+<li><p>销毁：如果线程正常执行完毕后或者线程被提前强制性的终止或者出现异常导致结束，线程就要被销毁，释放资源；</p>
+<p><img src="https://i.loli.net/2020/05/03/UbHchVonMB7vKkC.png" alt=""></p>
+</li>
+</ul>
+<p><strong>新建状态</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread t =<span class="keyword">new</span> Thread();</span><br></pre></td></tr></table></figure>
+
+<p>这里的创建，仅仅是Java的语言层面的创建，操作系统层面，真正的线程还没被创建，</p>
+<p>只有调用了start() 方法之后，该线程才会被创建出来，进入到Runnable状态，</p>
+<p><img src="https://i.loli.net/2020/05/03/HtGEMVPBTzgY4Kk.png" alt=""></p>
+<p><strong>就绪状态</strong></p>
+<p>调用start() 方法后，JVM进程会去创建一个新的线程，而此线程不会马上被CPU调度，进入Running状态，这里会有一个中间状态，就是Runnable状态，可以理解为等待被CPU调度的状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.start();</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/03/QuFvyiIzU53D8CV.png" alt=""></p>
+<p>那么处于Runnable状态的线程能发生哪些状态转变？</p>
+<p><img src="https://i.loli.net/2020/05/03/Eu81troqgw9aBhp.png" alt=""></p>
+<p>Runnable状态的线程是无法直接进入Blocked状态和Terminated状态的，只有处于Running状态的线程（获得CPU调度执行权的线程才有资格进入到Blocked和Terminated状态，Runnabled状态的线程要么被切换为Running状态，要么被意外终止）</p>
+<p><strong>运行状态</strong></p>
+<p>当CPU调度发生了，并从任务队列中选中了某个Runnable线程时，该线程会进入Running执行状态，并且开始调用run()方法执行任务，那么处于Running状态的线程能发生哪些状态转变？</p>
+<ul>
+<li><p>被转换为Terminated状态，比如调用stop()方法</p>
+</li>
+<li><p>被转换为Blocked状态，</p>
+<ul>
+<li>比如调用了sleep，wait方法加入到waitSet中；</li>
+<li>比如进行IO阻塞操作，查询数据库进入阻塞状态</li>
+<li>获取某个锁的释放，而被加入该锁的阻塞队列中；</li>
+</ul>
+</li>
+<li><p>该线程的时间片使用完了，CPU再次调度，进入到Runnable状态</p>
+</li>
+<li><p>线程主动调用yield方法，让出CPU资源，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/QkDFudtEg6WXNZj.png" alt=""></p>
+</li>
+</ul>
+<p><strong>阻塞状态</strong></p>
+<ul>
+<li><p>转换为Terminated状态，调用stop()方法，或者JVM意外Crash；</p>
+</li>
+<li><p>被转换为Runnable状态，阻塞时间结束，比如读取数据库的数据后</p>
+</li>
+<li><p>完成了指定时间的休眠，进入到Runnable状态</p>
+</li>
+<li><p>正在wait中的线程，被其他线程调用notify/notifyAll方法唤醒，进入到Runnable状态</p>
+</li>
+<li><p>线程获取到想要的锁资源，进入到Runnable状态；</p>
+</li>
+<li><p>线程在阻塞状态下被打断，如其他线程调用了interrupt方法，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/nNi3HfX7jtlw8kS.png" alt=""></p>
+</li>
+</ul>
+<p><strong>终止状态</strong></p>
+<p>一旦线程进入到Terminated状态，意味着这个线程生命的终结；</p>
+<ul>
+<li>线程正常运行结束，生命周期结束；</li>
+<li>线程运行过程中出现错误；</li>
+<li>JVM异常结束，所有的线程生命周期均被结束；</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9qnbhtb000a5c3b2juu3onv" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9qunz170009ev3ba13r824k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -349,26 +545,11 @@
 <p>TCP端口和UDP端口相互独立，各自从属的端口由各自协议查看。</p>
 <p>UDP长度字段指的是UDP首部和UDP数据的字节长度，该字段最小值为8个字节。</p>
 <p>IP数据报长度指的是数据报全长，UDP数据报长度是全长减去IP首部的长度。</p>
-<p>public static void main(String[] args) {<br>       ShareData shareData = new ShareData();<br>       new Thread(new MyRunnable(shareData)).start();<br>       new Thread(new MyRunnable2(shareData)).start();<br>}<br>static class MyRunnable1 implements Runnable {<br>       private ShareData shareData;  </p>
-<pre><code>public MyRunnable1(ShareData shareData) {  
-    this.shareData = shareData;  
-}  
-
-@Override  
-public void run() {  
-    shareData.increase();  
-}  </code></pre><p>}<br>static class MyRunnable2 implements Runnable {<br>    private ShareData shareData;  </p>
-<p>   public MyRunnable2(ShareData shareData) {<br>           this.shareData = shareData;<br>       }  </p>
-<pre><code>@Override  
-public void run() {  
-    shareData.decrease();  
-}  </code></pre><p>}<br>static class ShareData {<br>   int count = 100;  </p>
-<p>  public void increase() {<br>           count++;<br>  }<br>  public void decrease() {<br>           count–;<br>  }<br>}  </p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9qnbht700065c3b13m084sf" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9qunz19000dev3b9icu2nbc" class="article-share-link">Share</a>
       
       
     </footer>
@@ -513,7 +694,7 @@ public void run() {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9qnbhta00095c3bdj7552be" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9qunz18000aev3bhm4ifmb4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
@@ -578,7 +759,7 @@ public void run() {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9qnbht200015c3bctnphxxl" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9qunz130004ev3bhb8h46af" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -633,7 +814,7 @@ public void run() {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9qnbhsx00005c3bef93fr9q" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9qunz0v0000ev3bamtmd2vh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -697,6 +878,10 @@ public void run() {
       <ul>
         
           <li>
+            <a href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/">Java多线程（二）同步线程分组问题</a>
           </li>
         
@@ -710,10 +895,6 @@ public void run() {
         
           <li>
             <a href="/2020/05/01/UDP/">UDP</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/">TCP/IP协议概念</a>
           </li>
         
       </ul>

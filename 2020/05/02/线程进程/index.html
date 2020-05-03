@@ -15,8 +15,14 @@
 <meta property="og:description" content="###线程 进程 概念 @来自 https:&#x2F;&#x2F;www.zhihu.com&#x2F;question&#x2F;25532384 进程和线程都是一个时间段的描述，是CPU工作时间的描述； CPU+RAM+各种资源（显卡，光驱，键盘，GPS等外设）构成电脑， 电脑运行，实际上就是CPU和相关寄存器以及RAM之间的事； 基础事实 CPU太快，寄存器执行效率仅能追上其脚步，RAM和其他的IO设备更是效率低下。 当多个任务">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://i.loli.net/2020/05/02/judtDcJC9MbxEk7.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/UbHchVonMB7vKkC.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/HtGEMVPBTzgY4Kk.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/QuFvyiIzU53D8CV.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/Eu81troqgw9aBhp.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/QkDFudtEg6WXNZj.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/03/nNi3HfX7jtlw8kS.png">
 <meta property="article:published_time" content="2020-05-02T13:46:35.000Z">
-<meta property="article:modified_time" content="2020-05-02T13:58:23.021Z">
+<meta property="article:modified_time" content="2020-05-03T09:25:19.458Z">
 <meta property="article:author" content="HashWaney">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
@@ -126,11 +132,81 @@
 <p>1.线程之间通信更方便，同一进程下的线程共享全局变量，静态变量等数据，而进程之间的通信需要通过IPC进行；</p>
 <p>2.线程调度与切换比进程快很多，同时创建一个线程的开销比进程要小很多；</p>
 <p>3.多进程程序更加健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉，并不会对另外一个进程造成影响，因为进程有自己独立的地址空间；</p>
+<h4 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h4><p>@<a href="https://www.cnblogs.com/marsitman/p/11228684.html" target="_blank" rel="noopener">https://www.cnblogs.com/marsitman/p/11228684.html</a></p>
+<p>生命周期包含5个阶段：新建，就绪，运行，阻塞，销毁</p>
+<ul>
+<li><p>新建：new方法， – new Thread();</p>
+</li>
+<li><p>就绪：调用start()方法，这时候线程处于等待CPU分配资源的阶段，谁先抢到CPU资源，谁先开始；</p>
+</li>
+<li><p>运行：当就绪的线程被调度并获得CPU资源时候，便进入运行状态，run方法定义了线程的操作和功能</p>
+</li>
+<li><p>阻塞：在运行状态的时候，可能由于某些原因导致运行状态变成了阻塞状态，比如sleep(), wait()之后线程处于阻塞状态，这个时候需要其他机制将处于阻塞状态的线程唤醒，比如调用notify/notifyAll方法，唤醒的线程不会立即执行run方法，而是<strong>再次等待CPU分配资源进入运行状态。</strong></p>
+</li>
+<li><p>销毁：如果线程正常执行完毕后或者线程被提前强制性的终止或者出现异常导致结束，线程就要被销毁，释放资源；</p>
+<p><img src="https://i.loli.net/2020/05/03/UbHchVonMB7vKkC.png" alt=""></p>
+</li>
+</ul>
+<p><strong>新建状态</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread t =<span class="keyword">new</span> Thread();</span><br></pre></td></tr></table></figure>
+
+<p>这里的创建，仅仅是Java的语言层面的创建，操作系统层面，真正的线程还没被创建，</p>
+<p>只有调用了start() 方法之后，该线程才会被创建出来，进入到Runnable状态，</p>
+<p><img src="https://i.loli.net/2020/05/03/HtGEMVPBTzgY4Kk.png" alt=""></p>
+<p><strong>就绪状态</strong></p>
+<p>调用start() 方法后，JVM进程会去创建一个新的线程，而此线程不会马上被CPU调度，进入Running状态，这里会有一个中间状态，就是Runnable状态，可以理解为等待被CPU调度的状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.start();</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/03/QuFvyiIzU53D8CV.png" alt=""></p>
+<p>那么处于Runnable状态的线程能发生哪些状态转变？</p>
+<p><img src="https://i.loli.net/2020/05/03/Eu81troqgw9aBhp.png" alt=""></p>
+<p>Runnable状态的线程是无法直接进入Blocked状态和Terminated状态的，只有处于Running状态的线程（获得CPU调度执行权的线程才有资格进入到Blocked和Terminated状态，Runnabled状态的线程要么被切换为Running状态，要么被意外终止）</p>
+<p><strong>运行状态</strong></p>
+<p>当CPU调度发生了，并从任务队列中选中了某个Runnable线程时，该线程会进入Running执行状态，并且开始调用run()方法执行任务，那么处于Running状态的线程能发生哪些状态转变？</p>
+<ul>
+<li><p>被转换为Terminated状态，比如调用stop()方法</p>
+</li>
+<li><p>被转换为Blocked状态，</p>
+<ul>
+<li>比如调用了sleep，wait方法加入到waitSet中；</li>
+<li>比如进行IO阻塞操作，查询数据库进入阻塞状态</li>
+<li>获取某个锁的释放，而被加入该锁的阻塞队列中；</li>
+</ul>
+</li>
+<li><p>该线程的时间片使用完了，CPU再次调度，进入到Runnable状态</p>
+</li>
+<li><p>线程主动调用yield方法，让出CPU资源，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/QkDFudtEg6WXNZj.png" alt=""></p>
+</li>
+</ul>
+<p><strong>阻塞状态</strong></p>
+<ul>
+<li><p>转换为Terminated状态，调用stop()方法，或者JVM意外Crash；</p>
+</li>
+<li><p>被转换为Runnable状态，阻塞时间结束，比如读取数据库的数据后</p>
+</li>
+<li><p>完成了指定时间的休眠，进入到Runnable状态</p>
+</li>
+<li><p>正在wait中的线程，被其他线程调用notify/notifyAll方法唤醒，进入到Runnable状态</p>
+</li>
+<li><p>线程获取到想要的锁资源，进入到Runnable状态；</p>
+</li>
+<li><p>线程在阻塞状态下被打断，如其他线程调用了interrupt方法，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/nNi3HfX7jtlw8kS.png" alt=""></p>
+</li>
+</ul>
+<p><strong>终止状态</strong></p>
+<p>一旦线程进入到Terminated状态，意味着这个线程生命的终结；</p>
+<ul>
+<li>线程正常运行结束，生命周期结束；</li>
+<li>线程运行过程中出现错误；</li>
+<li>JVM异常结束，所有的线程生命周期均被结束；</li>
+</ul>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9qnbhtb000a5c3b2juu3onv" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9qunz170009ev3ba13r824k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -211,6 +287,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/">Java多线程（二）同步线程分组问题</a>
           </li>
         
@@ -224,10 +304,6 @@
         
           <li>
             <a href="/2020/05/01/UDP/">UDP</a>
-          </li>
-        
-          <li>
-            <a href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/">TCP/IP协议概念</a>
           </li>
         
       </ul>
