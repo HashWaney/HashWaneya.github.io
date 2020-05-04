@@ -10,7 +10,7 @@
   <meta name="description" content="线程池概念和Executors类的应用 在TCP服务器编程模型中，当一个客户端连接到服务器，服务器要起一个线程为之服务，当客户端的会话结束后， 线程也就结束。 即每一个客户端连接，服务器就要为之创建一个新的线程。 如果访问服务器的客户端很多，那么服务器就会不断的创建和销毁线程，那么这样就严重影响服务器的性能； 怎么解决： 可以创建一些线程，这些线程构成的集合就称为线程池，当服务器接收到一个客户端请">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java多线程（三）线程池Callable 和 Future">
-<meta property="og:url" content="http://hashwaney.github.io/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/index.html">
+<meta property="og:url" content="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/index.html">
 <meta property="og:site_name" content="HashWaney">
 <meta property="og:description" content="线程池概念和Executors类的应用 在TCP服务器编程模型中，当一个客户端连接到服务器，服务器要起一个线程为之服务，当客户端的会话结束后， 线程也就结束。 即每一个客户端连接，服务器就要为之创建一个新的线程。 如果访问服务器的客户端很多，那么服务器就会不断的创建和销毁线程，那么这样就严重影响服务器的性能； 怎么解决： 可以创建一些线程，这些线程构成的集合就称为线程池，当服务器接收到一个客户端请">
 <meta property="og:locale" content="en_US">
@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://i.loli.net/2020/05/03/KsGxZ7n1wNmBFlc.png">
 <meta property="og:image" content="https://i.loli.net/2020/05/03/gUSpC1FNZLIozBR.png">
 <meta property="article:published_time" content="2020-05-03T06:01:35.000Z">
-<meta property="article:modified_time" content="2020-05-03T08:47:13.506Z">
+<meta property="article:modified_time" content="2020-05-03T09:37:51.681Z">
 <meta property="article:author" content="HashWaney">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
@@ -75,9 +75,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-Java线程池Callable和Future" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-Java多线程(三)线程池之Callable和Future" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/" class="article-date">
+    <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" class="article-date">
   <time datetime="2020-05-03T06:01:35.000Z" itemprop="datePublished">2020-05-03</time>
 </a>
     
@@ -189,7 +189,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/" data-id="ck9qur0n10006gg3b0wzt21jb" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" data-id="ck9shpwrr0003in3bbz6v6rp7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
@@ -200,10 +200,19 @@
     
 <nav id="article-nav">
   
+    <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Android面试集锦（一）内存泄露篇
+        
+      </div>
+    </a>
   
-    <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+  
+    <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Java多线程（二）同步线程分组问题</div>
+      <div class="article-nav-title">Java多线程（四）ThreadPoolExecutor相关知识</div>
     </a>
   
 </nav>
@@ -229,7 +238,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
     </div>
   </div>
 
@@ -239,7 +248,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 20px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 20px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
     </div>
   </div>
 
@@ -261,23 +270,23 @@
       <ul>
         
           <li>
-            <a href="/2020/05/03/Java%E7%BA%BF%E7%A8%8B%E6%B1%A0Callable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
+            <a href="/2020/05/04/%E9%9D%A2%E8%AF%95/">面试</a>
           </li>
         
           <li>
-            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/">Java多线程（二）同步线程分组问题</a>
+            <a href="/2020/05/04/Vultr/">Vultr</a>
           </li>
         
           <li>
-            <a href="/2020/05/02/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%80)%20%E7%BA%BF%E7%A8%8B%E9%97%B4%E7%9A%84%E4%BA%92%E6%96%A5%E5%92%8C%E5%90%8C%E6%AD%A5%E9%80%9A%E4%BF%A1/">Java多线程（一） 线程间的互斥和同步通信</a>
+            <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
           </li>
         
           <li>
-            <a href="/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">线程进程概念</a>
+            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
           </li>
         
           <li>
-            <a href="/2020/05/01/UDP/">UDP</a>
+            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/">Java多线程（四）ThreadPoolExecutor相关知识</a>
           </li>
         
       </ul>

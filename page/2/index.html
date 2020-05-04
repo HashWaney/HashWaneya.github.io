@@ -5,20 +5,15 @@
   
 
   
-  <title>JNI 学习阶段（2）-Java与C/C++之间的相互回调 | HashWaney</title>
+  <title>HashWaney</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="背景知识   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C&#x2F;C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C&#x2F;C++层进行安排， 那么问题来了，C&#x2F;C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？ CallXXXMethod,FindCla">
-<meta property="og:type" content="article">
-<meta property="og:title" content="JNI 学习阶段（2）-Java与C&#x2F;C++之间的相互回调">
-<meta property="og:url" content="http://hashwaney.github.io/2020/04/29/JNI-CallBack/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="HashWaney">
+<meta property="og:url" content="http://hashwaney.github.io/page/2/index.html">
 <meta property="og:site_name" content="HashWaney">
-<meta property="og:description" content="背景知识   在开发过程中，我们或多或少有回调这么一个概念，那么Java 和 C&#x2F;C++ 看似完全不搭边的两种语言，本来就相安无事，但是这只是在应用层是这样的，但是如果涉及到了加密，性能相关的需求，往往会把这些实现放入到C&#x2F;C++层进行安排， 那么问题来了，C&#x2F;C++层执行完了的结果是如何告知Java层，答案是回调，对，那么抛出一个问题：如何进行回调呢？ CallXXXMethod,FindCla">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-04-29T10:17:26.000Z">
-<meta property="article:modified_time" content="2020-05-01T05:39:30.801Z">
 <meta property="article:author" content="HashWaney">
-<meta property="article:tag" content="JNI">
-<meta property="article:tag" content="Android">
+<meta property="article:tag" content="coder">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternate" href="/atom.xml" title="HashWaney" type="application/atom+xml">
@@ -72,7 +67,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-JNI-CallBack" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main">
+  
+    <article id="post-JNI-CallBack" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/04/29/JNI-CallBack/" class="article-date">
   <time datetime="2020-04-29T10:17:26.000Z" itemprop="datePublished">2020-04-29</time>
@@ -89,8 +86,8 @@
       <header class="article-header">
         
   
-    <h1 class="article-title" itemprop="name">
-      JNI 学习阶段（2）-Java与C/C++之间的相互回调
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/29/JNI-CallBack/">JNI 学习阶段（2）-Java与C/C++之间的相互回调</a>
     </h1>
   
 
@@ -133,28 +130,71 @@
     </footer>
   </div>
   
-    
-<nav id="article-nav">
-  
-    <a href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          TCP/IP协议概念
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2020/04/29/JNI/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">JNI 学习 阶段（1）—基础概念介绍</div>
-    </a>
-  
-</nav>
+</article>
+
 
   
+    <article id="post-JNI" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/29/JNI/" class="article-date">
+  <time datetime="2020-04-29T09:00:43.000Z" itemprop="datePublished">2020-04-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Android/">Android</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/29/JNI/">JNI 学习 阶段（1）—基础概念介绍</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="JNI-定义："><a href="#JNI-定义：" class="headerlink" title="JNI 定义："></a>JNI 定义：</h3><p>JNI (Java Native Inteface), Java 与 Native 层通信的接口；<br>背景知识：Android的FrameWork 层大多数采用了Java语言来编写，但是Android系统的非FrameWork层大多数采用了C/C++代码来实现，<br>Java代码无法直接与C/C++层进行沟通，因此才诞生了JNI这个桥梁，让Java和C/C++进行通信以及交互。</p>
+<h3 id="JNI中很重要的两个概念：JNIEnv-和-JavaVm："><a href="#JNI中很重要的两个概念：JNIEnv-和-JavaVm：" class="headerlink" title="JNI中很重要的两个概念：JNIEnv 和 JavaVm："></a>JNI中很重要的两个概念：JNIEnv 和 JavaVm：</h3><p>JNIEnv：可以理解是一个上下文，因为JNIEnv是与线程绑定的，因此如果我们在执行程序的时候，线程执行任务的时候就应该是和JNIEnv 进行唯一绑定了，至少线程知道是为了哪个进行服务了。<br>JavaVm：JavaVm就是Java虚拟机，这是个很重要的概念，因为我们Android系统从开机启动的时候，会创建JavaVm这个实例，至于JavaVm是不是一个进程这个有待验证（TODO），那么JavaVm是全局唯一的，是所有线程共享的。</p>
+<h3 id="JNI中动态注册和静态注册"><a href="#JNI中动态注册和静态注册" class="headerlink" title="JNI中动态注册和静态注册"></a>JNI中动态注册和静态注册</h3><p>1.静态注册的方式如下： </p>
+<p>特点：以Java_com_xxx_xxx_Function(JNIEnv* env,jobject instance)形式 进行静态Native方法的声明</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line">   JNIExport <span class="keyword">void</span> </span><br><span class="line">   <span class="function">JNICALL <span class="title">Java_org_hash_jni_demo_add</span><span class="params">(JNIEnv* env,jobject instance,<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.动态注册的方式如下：<br>     需要了解的就是一个JNINativeMethod 的结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">      <span class="keyword">const</span> <span class="keyword">char</span>* name; <span class="comment">//native 方法的名字</span></span><br><span class="line">      <span class="keyword">const</span> <span class="keyword">char</span>* sign; <span class="comment">//方法的签名 比如 c/c++ ("(II)V") --&gt; java void (int a ,int b);</span></span><br><span class="line">      (<span class="keyword">void</span>*) method;<span class="comment">// 函数指针 -&gt;指向定义的函数</span></span><br><span class="line"></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p> 那么动态注册native方法， 需要声明一个JNINativeMethod 数组，这个数组中的每一个元素就是我们需要声明的native方法</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span>&#123;</span><br><span class="line"></span><br><span class="line">            <span class="function">jint <span class="title">add</span><span class="params">(JNIEnv* env, jobject instance,<span class="keyword">int</span> a,<span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> a+b;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="function">jstring <span class="title">getString</span><span class="params">(JNIEnv* env,jobject instance)</span></span>&#123;</span><br><span class="line">                <span class="keyword">return</span> env-&gt;NewStringUTF(<span class="string">"hello"</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> JNINativeMethod gMethod[] =&#123;</span><br><span class="line">                &#123;<span class="string">"add"</span>, <span class="string">"(II)I"</span>,add&#125;,</span><br><span class="line">                &#123;<span class="string">"getString"</span>,<span class="string">"()Ljava/lang/String;"</span>,getString&#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            jint JNI_OnLoad(JavaVm* vm,<span class="keyword">void</span>* versered)&#123;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//声明一个JNIEnv* 指针</span></span><br><span class="line">                JNIEnv* env;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span>(vm-&gt;GetEnv((<span class="keyword">void</span>**)&amp;env,JNI_VERSION_1_6)!=JNI_OK)&#123; <span class="comment">//通过这一步env就被赋值了，好比一个空对象就被赋值了，当然赋值肯定是跟当前线程相关的。</span></span><br><span class="line">                    <span class="keyword">return</span> JNI_ERR;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">//调用env-&gt;RegisterNatives()完成方法的注册；</span></span><br><span class="line"></span><br><span class="line">                jclass clazz = env-&gt;FindClass(<span class="string">"org/hash/jni/JniHelper"</span>); <span class="comment">//假设这些方法都是在JniHelper中注册的。</span></span><br><span class="line"></span><br><span class="line">                env-&gt;RegisterNatives(clazz,gMethod,<span class="keyword">sizeof</span>(gMethod)/<span class="keyword">sizeof</span>(gMethod[<span class="number">0</span>]));</span><br><span class="line">                <span class="comment">//关于方法数计算 ： sizeof(gMethod)/sizeof(gMethod[0]);</span></span><br><span class="line">                <span class="comment">// JNINativeMethod是一个结构体，因此一个结构体字节大小就应该是里面所有成员属性的字节相加，char* name 一个char指针，4个字节</span></span><br><span class="line">                <span class="comment">// char* sign同理也是4个字节，void* method 同样也是4个字节，那么一个JNINativeMethod结构体就是12个字节，通过sizeof(gMethod[0]) 就可以求出为12个字节，</span></span><br><span class="line">                <span class="comment">//同理该数组的大小通过sizeof(gMethod) 求出n*12 n 为注册的方法个数。</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> JNI_VERSION_1_6;</span><br><span class="line">                </span><br><span class="line">                      &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：<br>    动态注册方法不需要写冗长的Java_cxxxxx_xxx的方法名。动态注册运行时效率比较高<br>    静态注册必须遵循Java_xxx_命名规则，名字过长。运行时查找效率地下。</p>
+<p>​<br>​    </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9shpwrs0004in3b66jhf1ls" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
+
+    </footer>
+  </div>
+  
 </article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 </section>
         
