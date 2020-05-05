@@ -69,6 +69,153 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-TCPIP协议族" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="article-date">
+  <time datetime="2020-04-30T14:33:35.000Z" itemprop="datePublished">2020-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/">TCP/IP协议概念</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="TCP-IP协议族"><a href="#TCP-IP协议族" class="headerlink" title="TCP/IP协议族"></a>TCP/IP协议族</h2><h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p><img src="https://i.loli.net/2020/05/01/eUWLOGEX4pZ2ln1.png" alt="image-20200430223637420.png"></p>
+<p>每一层负责不同的功能：</p>
+<p>链路层：设备网卡驱动</p>
+<p>网络层：IP协议（网际协议），ICMP协议（Internet互联网控制报文协议）IGMP协议（Internet组管理协议）</p>
+<p>运输层：为两台主机上的应用程序提供端到端的通信，</p>
+<p>​                UDP（用户数据报协议）：为应用层提供一种非常简单的服务，把数据报的分组从一台主机发送到另一台主机，不保证数据报能到达另一端，可靠性由应用层来提供。</p>
+<p>​                TCP（传输控制协议）：为两台主机提供高可靠性的数据通信，把应用程序交给它的数据分成合适的小块交给下面的网络层。</p>
+<p>应用层：负责特定的应用程序细节</p>
+<p><img src="https://i.loli.net/2020/05/01/wk2KVFqt5jIR4cP.png" alt="image-20200430225910667.png"></p>
+<p>FTP是应用层协议，TCP是一种运输层协议，IP是一种网络层协议，而以太网协议则应用与链路层，TCP/IP协议族是一组不同的协议组合在一起构成的协议族。</p>
+<p>在TCP/IP协议族中，网络层IP提供是一种不可靠的服务，也就是说它是尽可能快地把分组从源节点送到目的节点，但是不提供任何可靠性保证，TCP在不可靠的IP层提供了一个可靠的传输层，为了提供这种可靠服务，TCP采用了超时重传，发送和接收端到端的确认分组等机制。</p>
+<h3 id="TPC-IP的分层"><a href="#TPC-IP的分层" class="headerlink" title="TPC/IP的分层"></a>TPC/IP的分层</h3><p><img src="https://i.loli.net/2020/05/01/YoHX8vqMyTltVuI.png" alt="image-20200430230955893.png"></p>
+<p>​        总结： </p>
+<p>​        TCP和UDP是著名的传输层协议，二者都使用IP作为网络层协议</p>
+<p>​        TCP使用不可靠的IP服务，但是它提供一种可靠的运输层服务</p>
+<p>​        UDP为应用程序发送和接收数据报，UDP是不可靠的，不能保证数据报安全无误的到达最        终目的。</p>
+<p>​        IP是网络上的主要协议，同时被TCP和UDP使用，TCP和UDP的每组数据通过端系统和每个中间路由器中的IP层在互联网中进行传输。</p>
+<p>​        ICMP是IP协议的附属协议，IP层用其与其他主机或路由器交换错误报文和其他重要信息。</p>
+<p>​        IGMP是Internet组管理协议，用来把一个UDP数据报多播到多个主机。（广播和多播）</p>
+<p>​        ARP（地址解析协议）和 RARP（逆地址解析协议）是某些网络接口使用的特殊协议。用来转换IP层和网络接口层的地址。</p>
+<h3 id="互联网地址"><a href="#互联网地址" class="headerlink" title="互联网地址"></a>互联网地址</h3><p><img src="https://i.loli.net/2020/05/01/iAUn7uZNgjY49rc.png" alt="image-20200430232329896.png"></p>
+<p>互联网上每个接口必须有一个唯一的地址（IP地址），IP地址长32bit，IP地址具有一定的结构，（32/8）4个十进制的数。</p>
+<p>三类IP地址：</p>
+<p>单播地址（目的为单个主机）</p>
+<p>广播地址（目的端为给定网络上的所有主机）</p>
+<p>多播地址（目的端为同一组内的所有主机）</p>
+<p><img src="https://i.loli.net/2020/05/01/orTcRiwExnYD7kl.png" alt="image-20200430233316181.png"></p>
+<h3 id="域名系统"><a href="#域名系统" class="headerlink" title="域名系统"></a>域名系统</h3><p>主机名—IP映射</p>
+<p>域名系统（DNS）是一个分布的数据库，提供IP地址和主机名之间的映射信息。</p>
+<p>任何应用程序都可以调用一个标准的库函数来查看给定名字的主机的IP地址，</p>
+<p>系统还提供一个逆函数—给定主机的IP地址，查看对应的主机名</p>
+<h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><p><img src="https://i.loli.net/2020/05/01/kuRpC3bfnMriJXd.png" alt="image-20200430233514447.png"></p>
+<p>应用程序用TCP传送数据时，数据被送入到协议栈中，然后逐个通过每一层直到被当作一串</p>
+<p>比特流送入到网路，其中每一层对接收的数据都要增加一些首部数据（有时候还要增加一些尾部数据）</p>
+<p>TCP—&gt; IP 称为TCP报文段（TCP segment）</p>
+<p>UDP—&gt;IP 称为UDP数据报（UDP datagram）</p>
+<p>IP—-&gt;网络接口层 称为IP数据报（IP datagram）</p>
+<p>通过以太网传输的比特流称为帧（Frame）</p>
+<p>TCP，UDP，ICMP，IGMP都向IP传送数据，IP必须在生成一个IP首部中加入某种表示，</p>
+<p>表明数据属于哪一层，协议域：1表示ICMP 2表示IGMP 6表示TCP 17表示UDP</p>
+<p>运输层协议在生成报文首部时要存入一个应用程序的标识符。</p>
+<p>TCP和UDP都用一个16bit的<strong>端口号</strong>来表示不同的应用程序，</p>
+<p>TCP和UDP把源端口号和目的端口号分别存入报文首部中。</p>
+<p>同理，以太网要区分IP，ARP，和RARP数据，也要在其首部加入一个16bit的帧类型域。</p>
+<h3 id="分用"><a href="#分用" class="headerlink" title="分用"></a>分用</h3><p>其实就是封装的逆过程，去除相应的首部获取真正的数据源。</p>
+<p><img src="https://i.loli.net/2020/05/01/EVTexPyjNOlmMwK.png" alt="image-20200430235016887.png"></p>
+<p>当目的主机接收到一个以太网数据帧时，数据就开始从协议栈中由底向上升，同时去掉</p>
+<p>各层协议加上的报文首部，每层协议盒都去检查报文首部中的协议标识，以确定接收数据的上层协议。</p>
+<p>TODO 协议确实是通过目的端口号，源IP地址和源端口号进行解包的。</p>
+<h3 id="客户-服务器模型"><a href="#客户-服务器模型" class="headerlink" title="客户-服务器模型"></a>客户-服务器模型</h3><p>应用程序：一端是客户，一端是服务器，服务器为客户提供特定服务。</p>
+<p>服务器可分为重复型和并发型</p>
+<p>交互：</p>
+<p>​    重复型服务器：</p>
+<p>​    1.等待一个客户请求到来；</p>
+<p>​    2.处理客户请求；</p>
+<p>​    3.发送响应给请求的客户；</p>
+<p>​    4.返回1；</p>
+<p>​    总结：在2步骤中不能为其他客户提供服务；</p>
+<p>   并发型服务器：</p>
+<p>​    1.等待一个客户请求到来；</p>
+<p>​    2.启动一个新的服务器来处理请求，处理结束，终止新的服务器；</p>
+<p>​    3.返回1；</p>
+<p>​    总结：并发服务器优点就是在于它利用生成其他服务器的方法来处理客户请求，</p>
+<p>​                每个客户都有其对应的服务器；</p>
+<p>一般来说，TCP服务器是并发的，UDP服务器是重复的。</p>
+<h3 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h3><p>端口如何选择呢？</p>
+<p>知名端口号：1-255之间</p>
+<p>Unix系统：256-1023之间</p>
+<p>注：</p>
+<p>服务器</p>
+<p>一般都是通过知名端口号来识别的，对于每个TCP/IP实现来说，</p>
+<p>FTP服务器的TCP端口号都是21，</p>
+<p>每个Telnet服务器的TCP端口号都是23；</p>
+<p>每个TFTP（简单文件传送协议）服务器的UDP端口号都是69；</p>
+<p>任何TCP/IP实现所提供的服务都是用知名的1-1023之间的端口号；</p>
+<p>客户端</p>
+<p>通常对所使用的端口号并不关心，只需保证该端口号在本机上是唯一的，</p>
+<p>客户端口号又被称为临时端口号（存在时间很短暂）因为通常在用户运行该客户程序时才存在。</p>
+<p>临时端口号：1024-5000之间的端口号；</p>
+<p>Unix系统文件/etc/services包含了熟知的端口号；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grep telnet /etc/services </span><br><span class="line">telnet 23/udp UDP端口号23</span><br><span class="line">telnet 23/tcp TCP端口号23</span><br><span class="line">login  513/tcp 远程登录端口513</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/01/cDl1OagjbtSfk5d.png" alt="image-20200501114740386.png"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grep domain /etc/services</span><br><span class="line">domain 53/udp</span><br><span class="line">domain 53/tcp </span><br><span class="line">使用了UDP端口号53 和TCP端口号53</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/01/7aR13qG5Y4zKPHw.png" alt="image-20200501115926252.png"></p>
+<h3 id="标准化过程"><a href="#标准化过程" class="headerlink" title="标准化过程"></a>标准化过程</h3><p>谁控制TCP/IP协议族，谁定义新的标准：</p>
+<p>1、Internet协会（ISOC）：推动、支持和促进Internet不断增产和发展的专业组织；</p>
+<p>2、Internet体系结构委员会（IAB）： 技术监督和协调；</p>
+<p>3、Internet工程专门小组（IETF）：面向近期标准的组织；</p>
+<p>4、Internet研究专门小组（IRIF）：长远项目研究；</p>
+<h3 id="RFC"><a href="#RFC" class="headerlink" title="RFC"></a>RFC</h3><p>所有关于Internet的正式标准都是RFC 文档出版，出版的目的只是为了提供信息，更改了那些东西，（地址，端口号）；</p>
+<p>1）赋值RFC</p>
+<p>2）Internet正式协议标准</p>
+<p>3）主机需求RFC</p>
+<p>4）路由器需求RFC</p>
+<h3 id="互联网"><a href="#互联网" class="headerlink" title="互联网"></a>互联网</h3><p>Internet 和 internet 的区别</p>
+<p>internet意思是用一个共同的协议族把多个网络连接在一起，</p>
+<p>Internet指的是世界范围内通过TCP/IP互相通信的所有主机集合（more than  1000000）；</p>
+<p>Internet是一个internet，但是internet不等于Internet</p>
+<h3 id="应用编程接口"><a href="#应用编程接口" class="headerlink" title="应用编程接口"></a>应用编程接口</h3><p>使用TCP/IP协议的应用程序通常采用两种应用编程接口（API）：<strong>Socket</strong>和<strong>TLI</strong>（运输层接口）</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>TCP/IP协议族分为四层：</p>
+<p>链路层、网络层、运输层、应用层；</p>
+<p>网络层（IP）提供点到点的服务；</p>
+<p>运输层（TCP和UDP）提供端到端的服务；</p>
+<p>每个接口都用IP地址标识，域名系统（DNS）为主机名和IP地址之间提供动态的映射</p>
+<p>端口号用来标识互相通信的应用程序，</p>
+<p>服务器使用知名端口号，</p>
+<p>客户使用临时设定的端口号。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9tzqm3e000ls23be8iibevq" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-JNI-CallBack" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/04/29/JNI-CallBack/" class="article-date">
@@ -122,7 +269,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9sievtw0001ls3b53o0flfx" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9tzqm360003s23b1jd90k9k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -177,7 +324,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9sievu2000als3b4vg728l0" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9tzqm380006s23b0vw1hmdg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -214,7 +361,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
     </div>
   </div>
 
@@ -224,7 +371,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 20px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
     </div>
   </div>
 
@@ -246,6 +393,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java内存模型</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/04/%E9%9D%A2%E8%AF%95/">面试</a>
           </li>
         
@@ -258,11 +409,7 @@
           </li>
         
           <li>
-            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/">Java多线程（三）线程池Callable 和 Future</a>
-          </li>
-        
-          <li>
-            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/">Java多线程（四）ThreadPoolExecutor相关知识</a>
+            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
           </li>
         
       </ul>

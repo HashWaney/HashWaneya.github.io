@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Java内存模型 | HashWaney</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文地址 前言 Java内存模型指定Java虚拟机如何与计算机的内存（RAM）一起使用。 Java虚拟机是整个计算机的模型，因此该模型自然包含一个内存模型-AKA Java内存模型。 如果要正确设计行为并发的程序，那么了解Java内存模型非常重要。 Java内存模型指定不同线程如何以及何时看到其他线程写入共享变量的值，以及在必要时如何同步对共享变量的访问。 原始的Java内存模型不足，因此Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内存模型">
+<meta property="og:url" content="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="HashWaney">
+<meta property="og:description" content="原文地址 前言 Java内存模型指定Java虚拟机如何与计算机的内存（RAM）一起使用。 Java虚拟机是整个计算机的模型，因此该模型自然包含一个内存模型-AKA Java内存模型。 如果要正确设计行为并发的程序，那么了解Java内存模型非常重要。 Java内存模型指定不同线程如何以及何时看到其他线程写入共享变量的值，以及在必要时如何同步对共享变量的访问。 原始的Java内存模型不足，因此Java">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/UG4kyrLWEdCanOe.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/iBxPvjfSe6OXRFY.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/lLcNsOnFrP8Vyd9.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/tih8RO3AV9ISakc.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/awz1xXBOfhci5P3.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/wIz682AsDu3SEjg.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/05/KAMRaJgyNetomTz.png">
+<meta property="article:published_time" content="2020-05-05T10:40:00.000Z">
+<meta property="article:modified_time" content="2020-05-05T14:10:37.209Z">
+<meta property="article:author" content="HashWaney">
+<meta property="article:tag" content="【Java并发编程】">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/05/UG4kyrLWEdCanOe.png">
+  
+    <link rel="alternate" href="/atom.xml" title="HashWaney" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">HashWaney</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Action and Thinking</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://hashwaney.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Java内存模型" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="article-date">
+  <time datetime="2020-05-05T10:40:00.000Z" itemprop="datePublished">2020-05-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java内存模型
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="http://tutorials.jenkov.com/java-concurrency/java-memory-model.html" target="_blank" rel="noopener">原文地址</a></p>
+<p><strong>前言</strong></p>
+<p>Java内存模型指定Java虚拟机如何与计算机的内存（RAM）一起使用。 Java虚拟机是整个计算机的模型，因此该模型自然包含一个内存模型-AKA Java内存模型。</p>
+<p>如果要正确设计行为并发的程序，那么了解Java内存模型非常重要。 Java内存模型指定不同线程如何以及何时看到其他线程写入共享变量的值，以及在必要时如何同步对共享变量的访问。</p>
+<p>原始的Java内存模型不足，因此Java内存模型在Java 1.5中进行了修订。 此版本的Java内存模型仍在Java 8中使用。</p>
+<p><strong>内部Java内存模型</strong><br>JVM内部使用的Java内存模型在线程堆栈和堆之间分配内存。 此图从逻辑角度说明了Java内存模型：</p>
+<p><img src="https://i.loli.net/2020/05/05/UG4kyrLWEdCanOe.png" alt=""></p>
+<p>Java虚拟机中运行的每个线程都有其自己的线程堆栈。线程堆栈包含有关线程调用了哪些方法以达到当前执行点的信息。我将其称为“调用堆栈”。当线程执行其代码时，调用堆栈会更改。</p>
+<p>线程堆栈还包含正在执行的每个方法（调用堆栈上的所有方法）的所有局部变量。线程只能访问自己的线程堆栈。由线程创建的局部变量对创建线程之外的所有其他线程不可见。即使两个线程执行的代码完全相同，这两个线程仍将在各自的线程堆栈中创建该代码的局部变量。因此，每个线程对每个局部变量都有其自己的版本。</p>
+<p>所有原始类型的本地变量（布尔值，字节，短型，字符型，整数，长型，浮点型，双精度型）都已完全存储在线程堆栈中，因此其他线程不可见。一个线程可以将一个主要变量的副本传递给另一个线程，但是它不能共享原始局部变量本身。</p>
+<p>堆包含在Java应用程序中创建的所有对象，而与创建该对象的线程无关。这包括原始类型的对象版本（例如Byte，Integer，Long等）。创建对象并将其分配给局部变量，或者将其创建为另一个对象的成员变量都没有关系，该对象仍存储在堆中。</p>
+<p>这是说明调用堆栈和存储在线程堆栈上的局部变量以及存储在堆上的对象的图：</p>
+<p><img src="https://i.loli.net/2020/05/05/iBxPvjfSe6OXRFY.png" alt=""></p>
+<p>局部变量可以是原始类型，在这种情况下，它完全保留在线程堆栈中。</p>
+<p>局部变量也可以是对对象的引用。在这种情况下，引用（局部变量）存储在线程堆栈中，但是对象本身（如果存储在堆中）。</p>
+<p>一个对象可能包含方法，而这些方法可能包含局部变量。即使这些方法所属的对象存储在堆中，这些局部变量也存储在线程堆栈中。</p>
+<p>对象的成员变量与对象本身一起存储在堆中。当成员变量是基本类型时，以及它是对对象的引用时，都是如此。</p>
+<p>静态类变量也与类定义一起存储在堆中。</p>
+<p>引用对象的所有线程都可以访问堆上的对象。当线程可以访问对象时，它也可以访问该对象的成员变量。如果两个线程同时在同一个对象上调用一个方法，则它们都可以访问该对象的成员变量，但是每个线程将拥有自己的局部变量副本。</p>
+<p>这是说明以上几点的图：</p>
+<p><img src="https://i.loli.net/2020/05/05/lLcNsOnFrP8Vyd9.png" alt=""></p>
+<p>两个线程具有一组局部变量。局部变量之一（局部变量2）指向堆上的共享对象（对象3）。这两个线程分别具有对同一对象的不同引用。它们的引用是局部变量，因此存储在每个线程的线程堆栈中（在每个线程上）。但是，两个不同的引用指向堆上的同一对象。</p>
+<p>注意共享对象（对象3）如何引用对象2和对象4作为成员变量（由对象3到对象2和对象4的箭头所示）。通过对象3中的这些成员变量引用，两个线程可以访问对象2和对象4。</p>
+<p>该图还显示了一个局部变量，该局部变量指向堆上的两个不同对象。在这种情况下，引用指向两个不同的对象（对象1和对象5），而不是同一对象。理论上，如果两个线程都引用了两个对象，则两个线程都可以访问对象1和对象5。但是在上图中，每个线程仅具有对两个对象之一的引用。</p>
+<p>那么，哪种Java代码可能导致上面的内存图？ 好吧，代码和下面的代码一样简单：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> class MyRunnable implements <span class="title">Runnable</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        methodOne();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodOne</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> localVariable1 = <span class="number">45</span>;</span><br><span class="line"></span><br><span class="line">        MySharedObject localVariable2 =</span><br><span class="line">            MySharedObject.sharedInstance;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//... do more with local variables.</span></span><br><span class="line"></span><br><span class="line">        methodTwo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodTwo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Integer localVariable1 = <span class="keyword">new</span> Integer(<span class="number">99</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//... do more with local variable.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySharedObject</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//static variable pointing to instance of MySharedObject</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> MySharedObject sharedInstance =</span><br><span class="line">        <span class="keyword">new</span> MySharedObject();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//member variables pointing to two objects on the heap</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer object2 = <span class="keyword">new</span> Integer(<span class="number">22</span>);</span><br><span class="line">    <span class="keyword">public</span> Integer object4 = <span class="keyword">new</span> Integer(<span class="number">44</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> member1 = <span class="number">12345</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">long</span> member1 = <span class="number">67890</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果有两个线程正在执行run（）方法，那么前面显示的图就是结果。 run（）方法调用methodOne（），methodOne（）调用methodTwo（）。</p>
+<p>methodOne（）声明一个原始的局部变量（int类型的localVariable1）和一个作为对象引用的局部变量（localVariable2）。</p>
+<p>每个执行methodOne（）的线程将在其各自的线程堆栈上创建其自己的localVariable1和localVariable2副本。 localVariable1变量将完全彼此分离，仅存在于每个线程的线程堆栈中。一个线程看不到另一个线程对其localVariable1副本所做的更改。</p>
+<p>每个执行methodOne（）的线程还将创建自己的localVariable2副本。但是，localVariable2的两个不同副本最终都指向堆上的同一对象。该代码将localVariable2设置为指向静态变量引用的对象。静态变量只有一个副本，并且此副本存储在堆中。因此，localVariable2的两个副本最终都指向静态变量指向的MySharedObject的同一实例。 MySharedObject实例也存储在堆中。它对应于上图中的对象3。</p>
+<p>注意MySharedObject类也包含两个成员变量。成员变量本身与对象一起存储在堆中。这两个成员变量指向另外两个Integer对象。这些整数对象对应于上图中的对象2和对象4。</p>
+<p>还要注意methodTwo（）如何创建一个名为localVariable1的局部变量。此局部变量是对Integer对象的对象引用。该方法将localVariable1引用设置为指向新的Integer实例。执行methodTwo（）的每个线程的localVariable1引用将存储在一个副本中。实例化的两个Integer对象将存储在堆中，但是由于该方法每次执行该方法时都会创建一个新的Integer对象，因此执行此方法的两个线程将创建单独的Integer实例。在methodTwo（）内部创建的Integer对象对应于上图中的对象1和对象5。</p>
+<p>还请注意，类型为long的MySharedObject类中的两个成员变量是基本类型。由于这些变量是成员变量，因此它们仍与对象一起存储在堆中。仅局部变量存储在线程堆栈上。</p>
+<p><strong>硬件内存架构</strong></p>
+<p>现代硬件内存体系结构与内部Java内存模型有所不同。 同样重要的是，还要了解硬件内存架构，并了解Java内存模型如何与之协同工作。 本节描述了常见的硬件内存体系结构，下一节将描述Java内存模型如何与之协同工作。</p>
+<p>这是现代计算机硬件体系结构的简化图：</p>
+<p><img src="https://i.loli.net/2020/05/05/tih8RO3AV9ISakc.png" alt=""></p>
+<p>现代计算机通常其中装有2个或更多CPU。其中一些CPU也可能具有多个内核。关键是，在具有2个或更多CPU的现代计算机上，可能同时运行多个线程。每个CPU都可以在任何给定时间运行一个线程。这意味着，如果您的Java应用程序是多线程的，则每个CPU可能在Java应用程序中同时（并发）运行一个线程。</p>
+<p>每个CPU包含一组寄存器，这些寄存器本质上是CPU内存。 CPU在这些寄存器上执行操作的速度比对主存储器中的变量执行操作的速度快得多。这是因为CPU可以比访问主存储器更快地访问这些寄存器。</p>
+<p>每个CPU可能还具有一个CPU缓存存储层。实际上，大多数现代CPU都具有一定大小的缓存层。 CPU可以比主存储器更快地访问其高速缓存，但是通常不如其访问内部寄存器的速度快。因此，CPU高速缓存存储器位于内部寄存器和主存储器之间的速度之间。某些CPU可能具有多个高速缓存层（第1级和第2级），但是了解Java内存模型如何与内存交互并不重要。重要的是要知道CPU可以具有某种高速缓存层。</p>
+<p>计算机还包含一个主存储区（RAM）。所有CPU都可以访问主存储器。主存储区通常比CPU的高速缓存大得多。</p>
+<p>通常，当CPU需要访问主内存时，它将部分主内存读入其CPU缓存。它甚至可以将缓存的一部分读入其内部寄存器，然后对其执行操作。当CPU需要将结果写回主存储器时，它将把值从其内部寄存器刷新到高速缓存，然后在某个时候将值刷新回主存储器。</p>
+<p>当CPU需要将其他内容存储在高速缓存中时，通常会将高速缓存中存储的值刷新回主存储器。 CPU高速缓存可以一次将数据写入其部分内存，并一次刷新其部分内存。它不必每次更新都读取/写入完整的缓存。通常，缓存在称为“缓存行”的较小存储块中更新。可以将一个或多个高速缓存行读入高速缓存存储器，并且可以将一个或多个高速缓存行再次刷新回主存储器。</p>
+<p><strong>Java内存模型和硬件内存架构之间的桥接</strong></p>
+<p>如前所述，Java内存模型和硬件内存体系结构是不同的。 硬件内存体系结构不能区分线程堆栈和堆。 在硬件上，线程堆栈和堆都位于主内存中。 有时，部分线程堆栈和堆可能会出现在CPU缓存和内部CPU寄存器中。 下图对此进行了说明：</p>
+<p><img src="https://i.loli.net/2020/05/05/awz1xXBOfhci5P3.png" alt=""></p>
+<p>当对象和变量被存放在计算机中各种不同的内存区域中时，就可能会出现一些具体的问题。主要包括如下两个方面：</p>
+<ul>
+<li>线程对共享变量修改的可见性</li>
+<li>当读，写和检查共享变量时出现race conditions</li>
+</ul>
+<p>下面我们专门来解释以下这两个问题.</p>
+<p><strong>共享对象的可见性</strong></p>
+<p>如果两个或者更多的线程在没有正确的使用volatile声明或者同步的情况下共享一个对象，一个线程更新这个共享对象可能对其它线程来说是不可见的。</p>
+<p>想象一下，共享对象被初始化在主内存中。跑在CPU上的线程将这个共享对象读到CPU缓存中。然后修改了这个对象。只要CPU缓存没有被刷新到主内存，对象修改后的版本对跑在其他CPU上的线程都是不可见的。这种方式可能导致每个线程拥有这个共享对象的私有拷贝。每个拷贝停留在不同的CPU缓存中。</p>
+<p>下图示意了这种情形。跑在左边CPU的线程拷贝这个共享对象到它的CPU缓存中，然后将count变量的值修改为2。这个修改对跑在右边CPU上的其它线程是不可见的，因为修改后的count的值还没有被刷新回主存中去。</p>
+<p><img src="https://i.loli.net/2020/05/05/wIz682AsDu3SEjg.png" alt=""></p>
+<p>要解决此问题，可以使用Java的volatile关键字。 volatile关键字可以确保给定的变量直接从主存储器中读取，并在更新时始终写回到主存储器中。</p>
+<p><strong>Race Conditions(竞争条件)</strong></p>
+<p>如果两个或多个线程共享一个对象，并且有多个线程更新该共享对象中的变量，则可能会发生竞争条件。</p>
+<p>想象一下，线程A是否将共享对象的变量计数读入其CPU缓存中。 还要想象一下，线程B的功能相同，但是它位于不同的CPU缓存中。 现在线程A加一个要计数，线程B执行相同的操作。 现在var1已增加两次，在每个CPU高速缓存中增加一次。</p>
+<p>如果这些增加是顺序执行的，则变量计数将增加两次，并将原始值+ 2写回到主存储器。</p>
+<p>但是，这两个增量是在没有适当同步的情况下同时执行的。 无论线程A和B中哪个线程将其更新的版本写回主内存，尽管有两个增量，更新后的值仅比原始值高1。</p>
+<p>该图说明了如上所述的竞争条件问题的发生：</p>
+<p><img src="https://i.loli.net/2020/05/05/KAMRaJgyNetomTz.png" alt=""></p>
+<p>解决这个问题可以使用Java同步块。一个同步块可以保证在同一时刻仅有一个线程可以进入代码的临界区。同步块还可以保证代码块中所有被访问的变量将会从主存中读入，当线程退出同步代码块时，所有被更新的变量都会被刷新回主存中去，不管这个变量是否被声明为volatile。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-id="ck9tzqm330001s23b1nq47nip" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/05/04/%E9%9D%A2%E8%AF%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">面试</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Android/">Android</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">May 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">April 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java内存模型</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/04/%E9%9D%A2%E8%AF%95/">面试</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/04/Vultr/">Vultr</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
+          </li>
+        
+          <li>
+            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 HashWaney<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
