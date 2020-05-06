@@ -69,6 +69,145 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-线程进程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" class="article-date">
+  <time datetime="2020-05-02T13:46:35.000Z" itemprop="datePublished">2020-05-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">线程进程概念</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>###线程 进程 概念</p>
+<p>@来自 <a href="https://www.zhihu.com/question/25532384" target="_blank" rel="noopener">https://www.zhihu.com/question/25532384</a></p>
+<p><strong>进程和线程都是一个时间段的描述，是CPU工作时间的描述；</strong></p>
+<p>CPU+RAM+各种资源（显卡，光驱，键盘，GPS等外设）构成电脑，</p>
+<p>电脑运行，实际上就是CPU和相关寄存器以及RAM之间的事；</p>
+<p><strong>基础事实</strong></p>
+<p>CPU太快，寄存器执行效率仅能追上其脚步，RAM和其他的IO设备更是效率低下。</p>
+<p>当多个任务要执行怎么办？ 轮流来？优先级高的来？无论是哪种策略，一句话获取到了CPU的时间片。</p>
+<p><strong>必知事实</strong></p>
+<p>执行一段程序代码，当得到CPU的时候，相关的资源必须到位，就是显卡，GPU的，然后CPU开始执行，除了CPU以外的所有构成了这个程序的执行环境，也就是我们定义的<strong>程序上下文</strong>，当程序执行完了或者是分配给他的执行时间用完了，就会被切换出去，在被切换出去的最后一步就是保存程序上下文，因为这是被CPU执行的运行环境。</p>
+<p><strong>串联事实</strong></p>
+<p>CPU看起来所有的任务都是一个一个的轮流执行的，具体的轮流方式就是：先加载程序A的上下文，然后执行A，保存程序A的上下文，调入下一个要执行的程序B的程序上下文，然后开始执行B，保存程序B的上下文。</p>
+<p><strong>定义</strong></p>
+<p>进程是资源（CPU，内存）分配的基本单位，具有一定功能的程序关于数据集合上的一次运行活动，进程是系统进行资源分配和调度的一个独立单位。</p>
+<p>线程是进程的一个实体，是独立运行和独立调度的基本单位（CPU上真正运行的是线程）线程基本上不拥有系统资源，但是其拥有运行过程中必不可少的资源（程序计数器，栈）</p>
+<img src="https://i.loli.net/2020/05/02/judtDcJC9MbxEk7.png" style="zoom:57%;" />
+
+<p>​                            进程的地址空间</p>
+<p>其中.data是已经初始化的全局和静态变量</p>
+<p>.bss是未初始化的全局和静态变量</p>
+<p>.text是已经编译的程序机器代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a =<span class="number">0</span>;<span class="comment">//全局初始化区----&gt;.data</span></span><br><span class="line"><span class="keyword">char</span>* p1; <span class="comment">//全局未初始化区 ---&gt;.data</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> b; <span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span> s[]=<span class="string">"abc"</span>;<span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span> *p2; <span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span>* p3=<span class="string">"1235"</span>;<span class="comment">//1235\0在常量区，p3在栈上</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> c =<span class="number">0</span>;<span class="comment">//全局（静态）初始化区</span></span><br><span class="line">    p1=(<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">10</span>);</span><br><span class="line">    p2=(<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">20</span>);</span><br><span class="line">    <span class="comment">//分配得来的10和20字节的区域就在堆区</span></span><br><span class="line">    <span class="built_in">strcpy</span>(p1,<span class="string">"1234"</span>);<span class="comment">//1234\0放在常量区，</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>区别</strong></p>
+<p>进程是资源分配的基本单位，线程是程序执行的基本单位</p>
+<p>进程拥有自己的资源空间，每启动一个进程，系统就会为它分配地址空间，而线程与CPU资源分配无关，多个线程共享同一进程内的资源，各线程地址空间相互独立；</p>
+<p>一个进程包含若干个线程；</p>
+<p><strong>优劣</strong></p>
+<p>1.线程之间通信更方便，同一进程下的线程共享全局变量，静态变量等数据，而进程之间的通信需要通过IPC进行；</p>
+<p>2.线程调度与切换比进程快很多，同时创建一个线程的开销比进程要小很多；</p>
+<p>3.多进程程序更加健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉，并不会对另外一个进程造成影响，因为进程有自己独立的地址空间；</p>
+<h4 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h4><p>@<a href="https://www.cnblogs.com/marsitman/p/11228684.html" target="_blank" rel="noopener">https://www.cnblogs.com/marsitman/p/11228684.html</a></p>
+<p>生命周期包含5个阶段：新建，就绪，运行，阻塞，销毁</p>
+<ul>
+<li><p>新建：new方法， – new Thread();</p>
+</li>
+<li><p>就绪：调用start()方法，这时候线程处于等待CPU分配资源的阶段，谁先抢到CPU资源，谁先开始；</p>
+</li>
+<li><p>运行：当就绪的线程被调度并获得CPU资源时候，便进入运行状态，run方法定义了线程的操作和功能</p>
+</li>
+<li><p>阻塞：在运行状态的时候，可能由于某些原因导致运行状态变成了阻塞状态，比如sleep(), wait()之后线程处于阻塞状态，这个时候需要其他机制将处于阻塞状态的线程唤醒，比如调用notify/notifyAll方法，唤醒的线程不会立即执行run方法，而是<strong>再次等待CPU分配资源进入运行状态。</strong></p>
+</li>
+<li><p>销毁：如果线程正常执行完毕后或者线程被提前强制性的终止或者出现异常导致结束，线程就要被销毁，释放资源；</p>
+<p><img src="https://i.loli.net/2020/05/03/UbHchVonMB7vKkC.png" alt=""></p>
+</li>
+</ul>
+<p><strong>新建状态</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread t =<span class="keyword">new</span> Thread();</span><br></pre></td></tr></table></figure>
+
+<p>这里的创建，仅仅是Java的语言层面的创建，操作系统层面，真正的线程还没被创建，</p>
+<p>只有调用了start() 方法之后，该线程才会被创建出来，进入到Runnable状态，</p>
+<p><img src="https://i.loli.net/2020/05/03/HtGEMVPBTzgY4Kk.png" alt=""></p>
+<p><strong>就绪状态</strong></p>
+<p>调用start() 方法后，JVM进程会去创建一个新的线程，而此线程不会马上被CPU调度，进入Running状态，这里会有一个中间状态，就是Runnable状态，可以理解为等待被CPU调度的状态</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.start();</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/05/03/QuFvyiIzU53D8CV.png" alt=""></p>
+<p>那么处于Runnable状态的线程能发生哪些状态转变？</p>
+<p><img src="https://i.loli.net/2020/05/03/Eu81troqgw9aBhp.png" alt=""></p>
+<p>Runnable状态的线程是无法直接进入Blocked状态和Terminated状态的，只有处于Running状态的线程（获得CPU调度执行权的线程才有资格进入到Blocked和Terminated状态，Runnabled状态的线程要么被切换为Running状态，要么被意外终止）</p>
+<p><strong>运行状态</strong></p>
+<p>当CPU调度发生了，并从任务队列中选中了某个Runnable线程时，该线程会进入Running执行状态，并且开始调用run()方法执行任务，那么处于Running状态的线程能发生哪些状态转变？</p>
+<ul>
+<li><p>被转换为Terminated状态，比如调用stop()方法</p>
+</li>
+<li><p>被转换为Blocked状态，</p>
+<ul>
+<li>比如调用了sleep，wait方法加入到waitSet中；</li>
+<li>比如进行IO阻塞操作，查询数据库进入阻塞状态</li>
+<li>获取某个锁的释放，而被加入该锁的阻塞队列中；</li>
+</ul>
+</li>
+<li><p>该线程的时间片使用完了，CPU再次调度，进入到Runnable状态</p>
+</li>
+<li><p>线程主动调用yield方法，让出CPU资源，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/QkDFudtEg6WXNZj.png" alt=""></p>
+</li>
+</ul>
+<p><strong>阻塞状态</strong></p>
+<ul>
+<li><p>转换为Terminated状态，调用stop()方法，或者JVM意外Crash；</p>
+</li>
+<li><p>被转换为Runnable状态，阻塞时间结束，比如读取数据库的数据后</p>
+</li>
+<li><p>完成了指定时间的休眠，进入到Runnable状态</p>
+</li>
+<li><p>正在wait中的线程，被其他线程调用notify/notifyAll方法唤醒，进入到Runnable状态</p>
+</li>
+<li><p>线程获取到想要的锁资源，进入到Runnable状态；</p>
+</li>
+<li><p>线程在阻塞状态下被打断，如其他线程调用了interrupt方法，进入到Runnable状态</p>
+<p><img src="https://i.loli.net/2020/05/03/nNi3HfX7jtlw8kS.png" alt=""></p>
+</li>
+</ul>
+<p><strong>终止状态</strong></p>
+<p>一旦线程进入到Terminated状态，意味着这个线程生命的终结；</p>
+<ul>
+<li>线程正常运行结束，生命周期结束；</li>
+<li>线程运行过程中出现错误；</li>
+<li>JVM异常结束，所有的线程生命周期均被结束；</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9ux74ix000rmd3bhmbjbwsj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-UDP" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/05/01/UDP/" class="article-date">
@@ -107,7 +246,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9us70xc000kgg3b6j2k0d7v" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9ux74is000fmd3b368y100k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -252,7 +391,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9us70xb000jgg3b8kmobg1d" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9ux74it000jmd3begp87ow6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li></ul>
@@ -317,7 +456,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9us70x10001gg3b64ntbzxs" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9ux74ie0000md3b1niy4p4v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -372,7 +511,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9us70ww0000gg3bcaj1gbz6" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9ux74ij0001md3b8ppz21so" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -409,7 +548,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
     </div>
   </div>
 
@@ -419,7 +558,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" style="font-size: 10px;">【多线程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
     </div>
   </div>
 
@@ -441,6 +580,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BCAS%E6%9C%BA%E5%88%B6%E7%AE%80%E4%BB%8B/">Java多线程CAS机制简介</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/">Java多线程-线程安全之原子性，可见性，有序性</a>
           </li>
         
@@ -454,10 +597,6 @@
         
           <li>
             <a href="/2020/05/04/Vultr/">Vultr</a>
-          </li>
-        
-          <li>
-            <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
           </li>
         
       </ul>

@@ -69,6 +69,97 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Java多线程CAS机制简介" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BCAS%E6%9C%BA%E5%88%B6%E7%AE%80%E4%BB%8B/" class="article-date">
+  <time datetime="2020-05-06T04:31:35.000Z" itemprop="datePublished">2020-05-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BCAS%E6%9C%BA%E5%88%B6%E7%AE%80%E4%BB%8B/">Java多线程CAS机制简介</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>CAS机制</strong></p>
+<p>CAS机制：Compare And  Swap 比较并替换,乐观锁的一种；<br>每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败，就重拾，直到成功为止；</p>
+<p>synchronzied：悲观锁，线程一旦得到锁，其他需要锁的线程就会挂起；</p>
+<p>syncrhonized虽然保证了线程的安全，但是性能上不是最优的，synchronized关键字让没有得到锁资源的<br>线程进入到blocked（阻塞）状态，而后在竞争到锁资源的时候恢复到Runnable（就绪）状态；<br>这个过程涉及到操作系统用户模式和内核模式的转换，代价较高；</p>
+<p>三个基本操作数</p>
+<ul>
+<li>内存地址V</li>
+<li>旧值oldValue</li>
+<li>要更改的新值newValue</li>
+</ul>
+<p>更新一个变量的时候，只有当变量的旧的值oldVlaue和内存地址V当中的实际值相同的时候，才会把内存地址V对应的值改为新的值newValue；</p>
+<p>图解</p>
+<ul>
+<li>1.在内存地址V当中，存储着值为10的变量</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/06/eHsIowNLXd8ABlg.png" alt=""></p>
+<ul>
+<li>2.此时Thread1想把变量a的值加上1，对于Thread1来说，a的旧值oldValue为10，要修改的新值newValue为11</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/06/G3WyuOZarXfbisp.png" alt=""></p>
+<ul>
+<li><p>3.在Thread1提交更新之前，另外一个Thread2抢先一步，把内存地址中的V的变量先更新为11；</p>
+<p><img src="https://i.loli.net/2020/05/06/RDv6pqZOahFtVzg.png" alt=""></p>
+</li>
+<li><p>4.在Thread1开始提交更新，首先A和内存地址V的实际比较，发现不等于内存地址被Thread2更新的实际变量值，提交失败（即10!=11)</p>
+<p><img src="https://i.loli.net/2020/05/06/gcrkw8O5l12tAnT.png" alt=""></p>
+</li>
+<li><p>5.在Thread1重新获取内存地址V的当前值，并重新计算想要修改的新值，此时对于Thread1来说，oldValue=11，Thread1是要进行加1操作，因此newValue为12</p>
+<p><img src="https://i.loli.net/2020/05/06/mNnL68HtpZhRljD.png" alt=""></p>
+</li>
+<li><p>6.此时没有其他线程修改内存地址V的值，线程进行Compare操作，发现oldValue和内存地址的值相等的</p>
+</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/06/cflLsphCtgxJNim.png" alt=""></p>
+<ul>
+<li>7.Thread1进行SWAP，把内存地址V的值为替换为newValue（12）</li>
+</ul>
+<p><img src="https://i.loli.net/2020/05/06/NWCtmRGyhJAVfjP.png" alt=""></p>
+<p><strong>CAS与Synchronized对比</strong></p>
+<p>Synchronized属于悲观锁，悲观的认为程序中的并发情况严重，CAS属于乐观锁，乐观认为程序中的并发情况不严重，所以让线程不断去尝试更新；</p>
+<p>其实就是一个无阻塞多线程争抢资源的模型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> AtomicBoolean flag =<span class="keyword">new</span> AtomicBoolean(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    AtomicBooleanTest runnable =<span class="keyword">new</span> AtomicBooleanTest();</span><br><span class="line">    <span class="keyword">new</span> Thread(runnable,<span class="string">"Thread-1"</span>).start();</span><br><span class="line">    <span class="keyword">new</span> Thread(runnable,<span class="string">"Thread-2"</span>).start();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicBooleanTest</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.err.println(Thread.currentThread().getName()+<span class="string">" outer flag:"</span>+flag.get());</span><br><span class="line">        <span class="keyword">if</span>(flag.compareAndSet(<span class="keyword">true</span>,<span class="keyword">false</span>))&#123;</span><br><span class="line">			System.out.println(Thread.currentThread().getName()+<span class="string">" inner flag:"</span>+flag.get());</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">399</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            flag.set(<span class="keyword">true</span>);</span><br><span class="line">            System.out.println(<span class="string">"执行完毕----&gt;"</span>+Thread.currentThread().getName()+<span class="string">"准备退出"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.err.println(<span class="string">"重试机制："</span>+Thread.currentThread().getName()+<span class="string">" flag:"</span>+flag.get());</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">399</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            run();    </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">---实验结果-----</span><br><span class="line">Thread-<span class="number">2</span> outer flag:<span class="keyword">true</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">true</span></span><br><span class="line">Thread-<span class="number">2</span> inner flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">false</span></span><br><span class="line">重试机制：Thread-<span class="number">1</span> flag:<span class="keyword">false</span></span><br><span class="line">执行完毕----&gt;Thread-<span class="number">2</span>准备退出</span><br><span class="line">Thread-<span class="number">1</span> outer flag:<span class="keyword">true</span></span><br><span class="line">Thread-<span class="number">1</span> inner flag:<span class="keyword">false</span></span><br><span class="line">执行完毕----&gt;Thread-<span class="number">1</span>准备退出</span><br><span class="line">---------------</span><br></pre></td></tr></table></figure>
+
+<p>从上诉实验结果发现，Thread2和Thread1初始化的flag为true，但是执行程序之后，Thread2将flag值为了flase</p>
+<p>那么这个时候，除了Thread2之外，其他线程无法访问共享内存为true的程序线程隔离区；</p>
+<p>那么其他线程只能不断的进行重试访问共享内存的flag变化，当Thread2将共享内存的flag置为true，并且退出了，即共享内存flag为true，因此Thread1才能从共享内存中获取标志位flag=true，不再进行重试，那么此时Thread的工作内存中的flag会被重置为true，那么通过compareAndSet(true,false)就能如愿进入到方法中，不需要在进入到else循环中，因此执行完之后调用flag.set(true),退出；</p>
+<p><strong>CAS缺点</strong></p>
+<p>得不到状态为true时候使用递归算法很耗费CPU资源</p>
+<p>1.CPU开销大</p>
+<p>并发量比较大的情况下，如果许多线程反复尝试更新某一个变量，却一直不成功， 循环往复，会给CPU带来很大压力</p>
+<p>2.不能保证代码块的原子性</p>
+<p>CAS机制所保证的只是一个变量的原子性操作，而不能保证整个代码块的原子性。</p>
+<p>如果需要保证3个变量共同进行原子性的更新，就不得不用synchronized；</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BCAS%E6%9C%BA%E5%88%B6%E7%AE%80%E4%BB%8B/" data-id="ck9ux74iq000amd3b5gnoege1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Java多线程-线程安全之原子性，可见性，有序性" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/" class="article-date">
@@ -177,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/" data-id="ck9us70x8000agg3b42yp8koe" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/" data-id="ck9ux74jc0018md3ba5dccny9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -282,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-id="ck9us70x9000dgg3b4mrh1lh9" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-id="ck9ux74in0005md3b44b1hzxj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -333,7 +424,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/04/%E9%9D%A2%E8%AF%95/" data-id="ck9us70xg000rgg3b1hkr35ua" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/04/%E9%9D%A2%E8%AF%95/" data-id="ck9ux74iv000mmd3bbdnj571k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -376,7 +467,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/04/Vultr/" data-id="ck9us70xe000ogg3b3bc44g78" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/04/Vultr/" data-id="ck9ux74iw000omd3beaov1un9" class="article-share-link">Share</a>
       
       
     </footer>
@@ -507,7 +598,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Android%E5%A4%8D%E4%B9%A0/" data-id="ck9us70x40004gg3bf728g2k0" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Android%E5%A4%8D%E4%B9%A0/" data-id="ck9ux74im0004md3bbartdmf0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
@@ -633,7 +724,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" data-id="ck9us70x50005gg3b0lvs3gu2" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" data-id="ck9ux74in0006md3bc8xd0ny3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -700,7 +791,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/" data-id="ck9us70x70009gg3bf8ghcqn1" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/" data-id="ck9ux74ir000dmd3b5elhgul5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -794,7 +885,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" data-id="ck9us70xa000fgg3b2at03dia" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" data-id="ck9ux74iu000kmd3b2fiz9qan" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -851,149 +942,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9us70x60006gg3b8n0fe0ah" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9ux74ip0009md3b67khd543" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-线程进程" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" class="article-date">
-  <time datetime="2020-05-02T13:46:35.000Z" itemprop="datePublished">2020-05-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/">线程进程概念</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>###线程 进程 概念</p>
-<p>@来自 <a href="https://www.zhihu.com/question/25532384" target="_blank" rel="noopener">https://www.zhihu.com/question/25532384</a></p>
-<p><strong>进程和线程都是一个时间段的描述，是CPU工作时间的描述；</strong></p>
-<p>CPU+RAM+各种资源（显卡，光驱，键盘，GPS等外设）构成电脑，</p>
-<p>电脑运行，实际上就是CPU和相关寄存器以及RAM之间的事；</p>
-<p><strong>基础事实</strong></p>
-<p>CPU太快，寄存器执行效率仅能追上其脚步，RAM和其他的IO设备更是效率低下。</p>
-<p>当多个任务要执行怎么办？ 轮流来？优先级高的来？无论是哪种策略，一句话获取到了CPU的时间片。</p>
-<p><strong>必知事实</strong></p>
-<p>执行一段程序代码，当得到CPU的时候，相关的资源必须到位，就是显卡，GPU的，然后CPU开始执行，除了CPU以外的所有构成了这个程序的执行环境，也就是我们定义的<strong>程序上下文</strong>，当程序执行完了或者是分配给他的执行时间用完了，就会被切换出去，在被切换出去的最后一步就是保存程序上下文，因为这是被CPU执行的运行环境。</p>
-<p><strong>串联事实</strong></p>
-<p>CPU看起来所有的任务都是一个一个的轮流执行的，具体的轮流方式就是：先加载程序A的上下文，然后执行A，保存程序A的上下文，调入下一个要执行的程序B的程序上下文，然后开始执行B，保存程序B的上下文。</p>
-<p><strong>定义</strong></p>
-<p>进程是资源（CPU，内存）分配的基本单位，具有一定功能的程序关于数据集合上的一次运行活动，进程是系统进行资源分配和调度的一个独立单位。</p>
-<p>线程是进程的一个实体，是独立运行和独立调度的基本单位（CPU上真正运行的是线程）线程基本上不拥有系统资源，但是其拥有运行过程中必不可少的资源（程序计数器，栈）</p>
-<img src="https://i.loli.net/2020/05/02/judtDcJC9MbxEk7.png" style="zoom:57%;" />
-
-<p>​                            进程的地址空间</p>
-<p>其中.data是已经初始化的全局和静态变量</p>
-<p>.bss是未初始化的全局和静态变量</p>
-<p>.text是已经编译的程序机器代码</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a =<span class="number">0</span>;<span class="comment">//全局初始化区----&gt;.data</span></span><br><span class="line"><span class="keyword">char</span>* p1; <span class="comment">//全局未初始化区 ---&gt;.data</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> b; <span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span> s[]=<span class="string">"abc"</span>;<span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span> *p2; <span class="comment">//栈</span></span><br><span class="line">    <span class="keyword">char</span>* p3=<span class="string">"1235"</span>;<span class="comment">//1235\0在常量区，p3在栈上</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> c =<span class="number">0</span>;<span class="comment">//全局（静态）初始化区</span></span><br><span class="line">    p1=(<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">10</span>);</span><br><span class="line">    p2=(<span class="keyword">char</span>*)<span class="built_in">malloc</span>(<span class="number">20</span>);</span><br><span class="line">    <span class="comment">//分配得来的10和20字节的区域就在堆区</span></span><br><span class="line">    <span class="built_in">strcpy</span>(p1,<span class="string">"1234"</span>);<span class="comment">//1234\0放在常量区，</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>区别</strong></p>
-<p>进程是资源分配的基本单位，线程是程序执行的基本单位</p>
-<p>进程拥有自己的资源空间，每启动一个进程，系统就会为它分配地址空间，而线程与CPU资源分配无关，多个线程共享同一进程内的资源，各线程地址空间相互独立；</p>
-<p>一个进程包含若干个线程；</p>
-<p><strong>优劣</strong></p>
-<p>1.线程之间通信更方便，同一进程下的线程共享全局变量，静态变量等数据，而进程之间的通信需要通过IPC进行；</p>
-<p>2.线程调度与切换比进程快很多，同时创建一个线程的开销比进程要小很多；</p>
-<p>3.多进程程序更加健壮，多线程程序只要有一个线程死掉，整个进程也死掉了，而一个进程死掉，并不会对另外一个进程造成影响，因为进程有自己独立的地址空间；</p>
-<h4 id="线程的生命周期"><a href="#线程的生命周期" class="headerlink" title="线程的生命周期"></a>线程的生命周期</h4><p>@<a href="https://www.cnblogs.com/marsitman/p/11228684.html" target="_blank" rel="noopener">https://www.cnblogs.com/marsitman/p/11228684.html</a></p>
-<p>生命周期包含5个阶段：新建，就绪，运行，阻塞，销毁</p>
-<ul>
-<li><p>新建：new方法， – new Thread();</p>
-</li>
-<li><p>就绪：调用start()方法，这时候线程处于等待CPU分配资源的阶段，谁先抢到CPU资源，谁先开始；</p>
-</li>
-<li><p>运行：当就绪的线程被调度并获得CPU资源时候，便进入运行状态，run方法定义了线程的操作和功能</p>
-</li>
-<li><p>阻塞：在运行状态的时候，可能由于某些原因导致运行状态变成了阻塞状态，比如sleep(), wait()之后线程处于阻塞状态，这个时候需要其他机制将处于阻塞状态的线程唤醒，比如调用notify/notifyAll方法，唤醒的线程不会立即执行run方法，而是<strong>再次等待CPU分配资源进入运行状态。</strong></p>
-</li>
-<li><p>销毁：如果线程正常执行完毕后或者线程被提前强制性的终止或者出现异常导致结束，线程就要被销毁，释放资源；</p>
-<p><img src="https://i.loli.net/2020/05/03/UbHchVonMB7vKkC.png" alt=""></p>
-</li>
-</ul>
-<p><strong>新建状态</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread t =<span class="keyword">new</span> Thread();</span><br></pre></td></tr></table></figure>
-
-<p>这里的创建，仅仅是Java的语言层面的创建，操作系统层面，真正的线程还没被创建，</p>
-<p>只有调用了start() 方法之后，该线程才会被创建出来，进入到Runnable状态，</p>
-<p><img src="https://i.loli.net/2020/05/03/HtGEMVPBTzgY4Kk.png" alt=""></p>
-<p><strong>就绪状态</strong></p>
-<p>调用start() 方法后，JVM进程会去创建一个新的线程，而此线程不会马上被CPU调度，进入Running状态，这里会有一个中间状态，就是Runnable状态，可以理解为等待被CPU调度的状态</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.start();</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.loli.net/2020/05/03/QuFvyiIzU53D8CV.png" alt=""></p>
-<p>那么处于Runnable状态的线程能发生哪些状态转变？</p>
-<p><img src="https://i.loli.net/2020/05/03/Eu81troqgw9aBhp.png" alt=""></p>
-<p>Runnable状态的线程是无法直接进入Blocked状态和Terminated状态的，只有处于Running状态的线程（获得CPU调度执行权的线程才有资格进入到Blocked和Terminated状态，Runnabled状态的线程要么被切换为Running状态，要么被意外终止）</p>
-<p><strong>运行状态</strong></p>
-<p>当CPU调度发生了，并从任务队列中选中了某个Runnable线程时，该线程会进入Running执行状态，并且开始调用run()方法执行任务，那么处于Running状态的线程能发生哪些状态转变？</p>
-<ul>
-<li><p>被转换为Terminated状态，比如调用stop()方法</p>
-</li>
-<li><p>被转换为Blocked状态，</p>
-<ul>
-<li>比如调用了sleep，wait方法加入到waitSet中；</li>
-<li>比如进行IO阻塞操作，查询数据库进入阻塞状态</li>
-<li>获取某个锁的释放，而被加入该锁的阻塞队列中；</li>
-</ul>
-</li>
-<li><p>该线程的时间片使用完了，CPU再次调度，进入到Runnable状态</p>
-</li>
-<li><p>线程主动调用yield方法，让出CPU资源，进入到Runnable状态</p>
-<p><img src="https://i.loli.net/2020/05/03/QkDFudtEg6WXNZj.png" alt=""></p>
-</li>
-</ul>
-<p><strong>阻塞状态</strong></p>
-<ul>
-<li><p>转换为Terminated状态，调用stop()方法，或者JVM意外Crash；</p>
-</li>
-<li><p>被转换为Runnable状态，阻塞时间结束，比如读取数据库的数据后</p>
-</li>
-<li><p>完成了指定时间的休眠，进入到Runnable状态</p>
-</li>
-<li><p>正在wait中的线程，被其他线程调用notify/notifyAll方法唤醒，进入到Runnable状态</p>
-</li>
-<li><p>线程获取到想要的锁资源，进入到Runnable状态；</p>
-</li>
-<li><p>线程在阻塞状态下被打断，如其他线程调用了interrupt方法，进入到Runnable状态</p>
-<p><img src="https://i.loli.net/2020/05/03/nNi3HfX7jtlw8kS.png" alt=""></p>
-</li>
-</ul>
-<p><strong>终止状态</strong></p>
-<p>一旦线程进入到Terminated状态，意味着这个线程生命的终结；</p>
-<ul>
-<li>线程正常运行结束，生命周期结束；</li>
-<li>线程运行过程中出现错误；</li>
-<li>JVM异常结束，所有的线程生命周期均被结束；</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9us70xe000mgg3b47hn8q8f" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li></ul>
 
     </footer>
   </div>
@@ -1027,7 +979,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
     </div>
   </div>
 
@@ -1037,7 +989,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" style="font-size: 10px;">【多线程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
     </div>
   </div>
 
@@ -1059,6 +1011,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BCAS%E6%9C%BA%E5%88%B6%E7%AE%80%E4%BB%8B/">Java多线程CAS机制简介</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/">Java多线程-线程安全之原子性，可见性，有序性</a>
           </li>
         
@@ -1072,10 +1028,6 @@
         
           <li>
             <a href="/2020/05/04/Vultr/">Vultr</a>
-          </li>
-        
-          <li>
-            <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
           </li>
         
       </ul>
