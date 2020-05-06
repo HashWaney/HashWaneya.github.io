@@ -69,6 +69,123 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Java多线程-线程安全之原子性，可见性，有序性" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/" class="article-date">
+  <time datetime="2020-05-06T00:52:35.000Z" itemprop="datePublished">2020-05-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/">Java多线程-线程安全之原子性，可见性，有序性</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>对于Java并发编程，关注以下几个点</p>
+<ul>
+<li>线程安全性，正确性</li>
+<li>线程的活跃性（死锁，活锁）</li>
+<li>性能</li>
+</ul>
+<p>其中首要解决的问题就是安全性，如果线程不安全，运行的结果与预期不一致，就连基本要求都没达到；</p>
+<p>保证线程的安全性主要就是保证线程同步，即线程之间的通行问题，</p>
+<p>操作系统中线程通信有以下几种方式</p>
+<ul>
+<li>信号量</li>
+<li>信号</li>
+<li>管道</li>
+<li>共享内存</li>
+<li>消息队列</li>
+<li>socket</li>
+</ul>
+<p>Java中线程通信主要使用的是共享内存的方式，为了加快执行的速度，线程一般不会直接操作内存，而是操作缓存</p>
+<p><img src="https://i.loli.net/2020/05/06/JpE3MQGbevNcSts.png" alt="多线程共享变量时的Java内存模型"></p>
+<p><strong>实际上，线程操作的是自己的工作内存，而不会直接操作主内存的</strong>                        </p>
+<p>如果线程对变量的操作没有<strong>刷到主内存的话</strong>，仅仅改变的自己的工作内存的变量的副本<strong>，那么对于其他线程来说是不可见的</strong></p>
+<p><strong>那么如果另外一个线程没有读取到主内存中新的值，而是使用旧的值，同样对于其他线程来说是不可见的；</strong></p>
+<p>对于JVM来说，主内存是所有线程共享的Java堆，而工作内存中的共享变量的副本是从主内存拷贝过去的，是线程私有的局部变量，位于Java栈中；</p>
+<p><strong>问题1：什么时候工作内存的变量会刷到主内存中？</strong></p>
+<p><strong>在Java内存模型中，如果一个操作执行的结果需要对另一个操作可见，那么这两个操作之间必须存在happens-before关系</strong></p>
+<p>例如：</p>
+<p>ThreadA 执行 i =1；线程B 执行j=i；如果线程A的操作和线程B的操作满足happens-before关系，那么j的值一定等于1，否则j的值不确定;</p>
+<p>happens-before关系如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">程序执行顺序规则：一个线程内，按照代码顺序执行，前一个动作优先与后一个动作发生</span><br><span class="line">锁规则：一个unlock操作优先与于后面对于同一个锁的lock操作</span><br><span class="line">volatile变量规则：对于一个变量的写操作要优先于后面对于这个变量的读操作</span><br><span class="line">传递规则：操作A优先操作B，操作B又优先于操作C，可以得出操作A优先于操作C执行，好比</span><br><span class="line">		if(a)&#123;&#125;else if(b)&#123;&#125;else if(c)else&#123;&#125;;</span><br><span class="line">		</span><br><span class="line">线程启动规则：Thread对象的start()方法调用优先于此线程的每个动作</span><br><span class="line">线程中断规则：对线程interrupt()方法的调用优先于发生被中断线程的代码检测到中断事件的发生；</span><br><span class="line">。。。</span><br></pre></td></tr></table></figure>
+
+<p>可以利用volatile关键字，或者锁机制实现内存的可见性；</p>
+<p>####<strong>可见性</strong></p>
+<p>当一个线程修改了线程共享变量的值，其他线程能够立即得知这个修改</p>
+<p>Java内存模型是通过在变量修改后将新的值同步会主内存的，在变量读取前会从主内存刷新变量值；</p>
+<p>也就是说Thread想进行一个共享变量的操作，会去主内存中将这个变量进行一次拷贝，然后进行更改，</p>
+<p>那么改了之后的变量会重新写入到主内存中（涉及到一个何时写入，上面已经讨论过了），那么其他线程继续做修改，通过volatile关键字已经将新的值同步到主内存中去，那么其他线程中的工作内存中对应的变量的也会进行相应的更新（我觉得应该是线程只需要拷贝一份数据，然后如果主内存中的值变化的话，数据的值会被立即更改）；</p>
+<p><strong>普通变量和volatile变量的区别</strong></p>
+<p>volatile的特殊规则保证了新的值能立即同步到主内存，以及每次使用前立即从内存中刷新，因此可以说保证了</p>
+<p>线程操作变量的可见性，普通变量不能保证这一点；</p>
+<p><strong>volatile实现原理</strong></p>
+<p>在翻译成汇编语言时候，会有一个LOCK前缀的指令；</p>
+<p>LOCK前缀的指令在多核处理器下会引发两种事情；</p>
+<ul>
+<li>将当前处理器缓存行的数据会写回到系统内存</li>
+<li>这个写回内存的操作会引起其他CPU里缓存该内存地址的数据无效</li>
+<li>当处理器要对数据进行修改操作，根据缓存一致性协议，发现自己的缓存该内存地址的数据无效，就会强制重新从系统内存中读取数据到缓存中</li>
+</ul>
+<p>####<strong>有序性</strong></p>
+<p>与volatile相比较，final域的读和写更像是普通的变量访问</p>
+<p>对于final域，编译器和处理器要遵守两个重排序规则</p>
+<ul>
+<li>在构造函数内对一个final域的写入，</li>
+</ul>
+<p>指的是：程序执行顺序按照代码的先后顺序执行</p>
+<ul>
+<li>线程内表现为串行执行；</li>
+<li>指令重排导致的工作内存主内存同步延迟</li>
+</ul>
+<p><strong>synchronized是如何保证有序性的</strong></p>
+<p>JVM规范规定JVM基于进入和退出Monitor(监视器)对象来实现方法同步和代码块同步，</p>
+<p>代码块同步使用的是monitorenter 和 monitorexit指令实现，</p>
+<p>方法同步使用另外一种方式实现；（TODO 暂未了解）但是同样可以用这两个指令来实现；</p>
+<p>monitorenter指令是在编译后插入到同步代码块的开始位置，</p>
+<p>monitorexit指令是插入到方法结束和异常处；</p>
+<p>JVM保证每个monitorenter必须有对应的monitorexit与之匹配，任何对象都有一个monitor与之关联，</p>
+<p>当且仅当一个monitor被持有后，处于锁定状态，线程执行到monitorenter指令时，将会尝试获取对象对应的</p>
+<p>monitor的所有权；（锁）</p>
+<p>总结来说：synchronized实际上是通过一个monitor对象，通过代码的执行过程插入monitorenter锁定代码块</p>
+<p>利用monitorexit在异常或者结束后解锁；通过synchronized修饰代码块活方法只会有一个线程执行，保障了程序的有序性；</p>
+<p><strong>在Java内存模型中，有两条规定：</strong></p>
+<ul>
+<li>线程对共享变量的所有操作都必须在自己的工作内存中进行，不能直接从主内存中读写</li>
+<li>不同线程之间无法访问其他线程工作内存中的变量，线程间变量值的传递需要通过主内存来完成</li>
+</ul>
+<p><strong>共享变量需要实现可见性：必须经过两个步骤：</strong></p>
+<ul>
+<li>把工作内存1中更新过的共享变量刷新到主内存中</li>
+<li>把主内存中最新的共享变量的值更新到工作内存2中</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/" data-id="ck9uq1hi80009d03bc7xzh73f" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Java内存模型" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" class="article-date">
@@ -162,7 +279,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-id="ck9tzqm330001s23b1nq47nip" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" data-id="ck9uq1hi50006d03b1nn43p85" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -213,7 +330,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/04/%E9%9D%A2%E8%AF%95/" data-id="ck9tzqm3c000gs23b2xw9djyi" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/04/%E9%9D%A2%E8%AF%95/" data-id="ck9uq1hie000nd03b8iuba092" class="article-share-link">Share</a>
       
       
     </footer>
@@ -256,7 +373,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/04/Vultr/" data-id="ck9tzqm3a000as23b8ouubo28" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/04/Vultr/" data-id="ck9uq1hig000qd03b6uwd8bwp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -387,104 +504,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Android%E5%A4%8D%E4%B9%A0/" data-id="ck9tzqm2z0000s23b4aeier08" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Android%E5%A4%8D%E4%B9%A0/" data-id="ck9uq1hi00001d03b7wc0aiaj" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Java多线程(五) 生产者与消费者模型" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" class="article-date">
-  <time datetime="2020-05-03T06:01:35.000Z" itemprop="datePublished">2020-05-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>概念</strong></p>
-<p>生产者消费者问题是线程模型中的经典问题，生产者和消费者在同一时间段共用同一存储空间，生产者向空间里面产生数据，消费者则取走数据；</p>
-<p>实现情况：</p>
-<p>生产者<strong>不断交替</strong>地产生数据“a”,”b”….，消费者<strong>不断交替</strong>地取走数据；</p>
-<p>问题：</p>
-<p>1.假设生产者线程刚向数据存储空间添加数据，还没加入，程序切换到消费者线程，消费者线程将取出的数据就是上一次的生产者添加的数据，那么这样是不是会造成数据错乱</p>
-<p>2.生产者生产了若干数据，消费者才开始取数据，那么这样的结果就会是消费者取出的数据和预想的生产一个取出一个不一致；</p>
-<p>那么问题1需要通过同步来解决，问题2需要线程间通信来解决；</p>
-<p>当存储空间为空时候，消费者阻塞，当存储空间满的时候，生产者阻塞；</p>
-<p><strong>总结：生产者消费者存在同步问题，线程间通信问题，那么可以使用wait/notify机制实现1.生产者线程放入一个数据，2.通知消费者线程取出数据，3.消费者线程取出数据后，通知生产者生产数据</strong> </p>
-<p><strong>1. wait() 和 notify() 实现</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> String fullLock=<span class="string">"fullLock"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> voud <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span> ; i&lt;<span class="number">4</span>; i++)&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(),<span class="string">"Producer Thread:"</span>+i).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Customer(),<span class="string">"Customer Thread:"</span>+i).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span> ; i&lt;=<span class="number">10</span>; i++)&#123;</span><br><span class="line">			<span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span>(fullLock)&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">10</span>)&#123;</span><br><span class="line">                    <span class="comment">//阻塞</span></span><br><span class="line">                    fullLock.wait();</span><br><span class="line">                &#125;</span><br><span class="line">                count++;</span><br><span class="line">                fullLock.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">1</span> ; i&lt;=<span class="number">10</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span>(fullLock)&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="comment">//内存中数据了，</span></span><br><span class="line">                  	fullLock.wait();</span><br><span class="line">                &#125;</span><br><span class="line">                count--;</span><br><span class="line">                fullLock.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">实验结果</span><br><span class="line">----</span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">    </span><br><span class="line">---------------</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.可重入锁ReentrantLock</strong></p>
-<p>​    可重入：某个线程已经获取了某个锁，再次获取锁而不会出现死锁；synchronized也是可重入的，但是使用ReentrantLock的话，才可以显示的控制锁，synchronized则是对锁的隐式控制；所以ReentrantLock是需要自己手动管理锁的加锁和解锁，还有加锁次数和解锁次数一定要一致；</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Lock lock =<span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Condition notFull  = <span class="keyword">new</span> Condition();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Condition notEmpty = <span class="keyword">new</span> Condition();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span> ; i&lt;<span class="number">5</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(),<span class="string">"Producer-Thread-"</span>+i).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Customer(),<span class="string">"Customer-Thread-"</span>+i).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>; i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackPrint();</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            lock.lock();</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">              <span class="keyword">while</span>(count==<span class="number">10</span>)&#123;</span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    notEmpty.await();</span><br><span class="line">                &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                  count++;</span><br><span class="line">                  notEmpty.signal();</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125; </span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            lock.lock();</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="keyword">try</span>&#123;</span><br><span class="line">                        notFull.await();<span class="comment">//发个等待信号</span></span><br><span class="line">                    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                count--;</span><br><span class="line">                notFull.signal(); <span class="comment">//发个信号生产</span></span><br><span class="line">			&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">实验结果</span><br><span class="line">----</span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">4</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span>    </span><br><span class="line">----</span><br></pre></td></tr></table></figure>
-
-<p><strong>3.阻塞队列BlockingQueue实现</strong></p>
-<p>即阻塞队列，某些情况下对阻塞队列的访问可能造成阻塞</p>
-<p>被阻塞的情况下</p>
-<p>1.当队列满了的时候，添加数据到队列中；</p>
-<p>2.当队列空了的时候，从队列中取出数据；</p>
-<p>so：当一线程对已经满了的阻塞队列进行入队操作时候会阻塞，除非有另外一个线程进行了出队操作，当一个线程对一个空的阻塞队列进行出队操作会阻塞，除非有另外一个线程进行了入队操作；</p>
-<table>
-<thead>
-<tr>
-<th>操作</th>
-<th>抛异常</th>
-<th>特定值</th>
-<th>阻塞</th>
-<th>超时</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>插入</td>
-<td>add(o)</td>
-<td>offer(o)</td>
-<td>put(o)</td>
-<td>offer(o,timeout,timeunit)</td>
-</tr>
-<tr>
-<td>移除</td>
-<td>remove(o)</td>
-<td>poll(o)</td>
-<td>take(o)</td>
-<td>poll(timeout,timeunit)</td>
-</tr>
-<tr>
-<td>检查</td>
-<td>element(o)</td>
-<td>peek(o)</td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<p>感觉这种实现方式不太靠谱；生产者和消费者不是</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" data-id="ck9tzqm370004s23bapfw9o01" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
 
     </footer>
   </div>
@@ -607,7 +630,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" data-id="ck9tzqm3c000es23b2h8h3fa8" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%B8%89)%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B9%8BCallable%E5%92%8CFuture/" data-id="ck9uq1hi40005d03b7sz1ggof" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -674,7 +697,101 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/" data-id="ck9tzqm3e000ks23bhqyo57t2" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E5%9B%9B)%20ThreadPoolExecutor%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%90%84%E5%8F%82%E6%95%B0%E6%84%8F%E4%B9%89/" data-id="ck9uq1hi9000ad03bfz7tfc9j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Java多线程(五) 生产者与消费者模型" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" class="article-date">
+  <time datetime="2020-05-03T06:01:35.000Z" itemprop="datePublished">2020-05-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>概念</strong></p>
+<p>生产者消费者问题是线程模型中的经典问题，生产者和消费者在同一时间段共用同一存储空间，生产者向空间里面产生数据，消费者则取走数据；</p>
+<p>实现情况：</p>
+<p>生产者<strong>不断交替</strong>地产生数据“a”,”b”….，消费者<strong>不断交替</strong>地取走数据；</p>
+<p>问题：</p>
+<p>1.假设生产者线程刚向数据存储空间添加数据，还没加入，程序切换到消费者线程，消费者线程将取出的数据就是上一次的生产者添加的数据，那么这样是不是会造成数据错乱</p>
+<p>2.生产者生产了若干数据，消费者才开始取数据，那么这样的结果就会是消费者取出的数据和预想的生产一个取出一个不一致；</p>
+<p>那么问题1需要通过同步来解决，问题2需要线程间通信来解决；</p>
+<p>当存储空间为空时候，消费者阻塞，当存储空间满的时候，生产者阻塞；</p>
+<p><strong>总结：生产者消费者存在同步问题，线程间通信问题，那么可以使用wait/notify机制实现1.生产者线程放入一个数据，2.通知消费者线程取出数据，3.消费者线程取出数据后，通知生产者生产数据</strong> </p>
+<p><strong>1. wait() 和 notify() 实现</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> String fullLock=<span class="string">"fullLock"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> voud <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span> ; i&lt;<span class="number">4</span>; i++)&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(),<span class="string">"Producer Thread:"</span>+i).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Customer(),<span class="string">"Customer Thread:"</span>+i).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span> ; i&lt;=<span class="number">10</span>; i++)&#123;</span><br><span class="line">			<span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span>(fullLock)&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">10</span>)&#123;</span><br><span class="line">                    <span class="comment">//阻塞</span></span><br><span class="line">                    fullLock.wait();</span><br><span class="line">                &#125;</span><br><span class="line">                count++;</span><br><span class="line">                fullLock.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">1</span> ; i&lt;=<span class="number">10</span>; i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span>(fullLock)&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="comment">//内存中数据了，</span></span><br><span class="line">                  	fullLock.wait();</span><br><span class="line">                &#125;</span><br><span class="line">                count--;</span><br><span class="line">                fullLock.notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">实验结果</span><br><span class="line">----</span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">4</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">4</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">    </span><br><span class="line">---------------</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.可重入锁ReentrantLock</strong></p>
+<p>​    可重入：某个线程已经获取了某个锁，再次获取锁而不会出现死锁；synchronized也是可重入的，但是使用ReentrantLock的话，才可以显示的控制锁，synchronized则是对锁的隐式控制；所以ReentrantLock是需要自己手动管理锁的加锁和解锁，还有加锁次数和解锁次数一定要一致；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Lock lock =<span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Condition notFull  = <span class="keyword">new</span> Condition();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Condition notEmpty = <span class="keyword">new</span> Condition();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> count =<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span> ; i&lt;<span class="number">5</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(),<span class="string">"Producer-Thread-"</span>+i).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Customer(),<span class="string">"Customer-Thread-"</span>+i).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>; i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackPrint();</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            lock.lock();</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">              <span class="keyword">while</span>(count==<span class="number">10</span>)&#123;</span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    notEmpty.await();</span><br><span class="line">                &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                  count++;</span><br><span class="line">                  notEmpty.signal();</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125; </span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">10</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                Thread.sleep(<span class="number">1999</span>);</span><br><span class="line">            &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            lock.lock();</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                <span class="keyword">while</span>(count==<span class="number">0</span>)&#123;</span><br><span class="line">                    <span class="keyword">try</span>&#123;</span><br><span class="line">                        notFull.await();<span class="comment">//发个等待信号</span></span><br><span class="line">                    &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                count--;</span><br><span class="line">                notFull.signal(); <span class="comment">//发个信号生产</span></span><br><span class="line">			&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">                lock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">实验结果</span><br><span class="line">----</span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">0</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">生产者<span class="number">1</span>生产者生产，目前总共有<span class="number">2</span></span><br><span class="line">生产者<span class="number">2</span>生产者生产，目前总共有<span class="number">3</span></span><br><span class="line">生产者<span class="number">3</span>生产者生产，目前总共有<span class="number">4</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">3</span></span><br><span class="line">消费者<span class="number">1</span>消费者消费，目前总共有<span class="number">2</span></span><br><span class="line">消费者<span class="number">2</span>消费者消费，目前总共有<span class="number">1</span></span><br><span class="line">消费者<span class="number">3</span>消费者消费，目前总共有<span class="number">0</span>    </span><br><span class="line">----</span><br></pre></td></tr></table></figure>
+
+<p><strong>3.阻塞队列BlockingQueue实现</strong></p>
+<p>即阻塞队列，某些情况下对阻塞队列的访问可能造成阻塞</p>
+<p>被阻塞的情况下</p>
+<p>1.当队列满了的时候，添加数据到队列中；</p>
+<p>2.当队列空了的时候，从队列中取出数据；</p>
+<p>so：当一线程对已经满了的阻塞队列进行入队操作时候会阻塞，除非有另外一个线程进行了出队操作，当一个线程对一个空的阻塞队列进行出队操作会阻塞，除非有另外一个线程进行了入队操作；</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>抛异常</th>
+<th>特定值</th>
+<th>阻塞</th>
+<th>超时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>插入</td>
+<td>add(o)</td>
+<td>offer(o)</td>
+<td>put(o)</td>
+<td>offer(o,timeout,timeunit)</td>
+</tr>
+<tr>
+<td>移除</td>
+<td>remove(o)</td>
+<td>poll(o)</td>
+<td>take(o)</td>
+<td>poll(timeout,timeunit)</td>
+</tr>
+<tr>
+<td>检查</td>
+<td>element(o)</td>
+<td>peek(o)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>感觉这种实现方式不太靠谱；生产者和消费者不是</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/" data-id="ck9uq1hic000jd03bgu7v8zqm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -731,7 +848,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9tzqm390009s23bepia7enb" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%8C)%20%E5%90%8C%E6%AD%A5%E7%BA%BF%E7%A8%8B%E5%88%86%E7%BB%84%E9%97%AE%E9%A2%98/" data-id="ck9uq1hia000dd03bcmjc6i5p" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li></ul>
@@ -870,59 +987,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9tzqm3u0010s23b4ta2bqt4" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/05/02/%E7%BA%BF%E7%A8%8B%E8%BF%9B%E7%A8%8B/" data-id="ck9uq1hid000ld03b6bai8gnu" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-UDP" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/05/01/UDP/" class="article-date">
-  <time datetime="2020-05-01T05:38:28.714Z" itemprop="datePublished">2020-05-01</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/01/UDP/">UDP</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="UDP用户数据报协议"><a href="#UDP用户数据报协议" class="headerlink" title="UDP用户数据报协议"></a>UDP用户数据报协议</h2><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>UDP是一个简单的面向数据报的运输层协议：</p>
-<p>进程的每个输出操作都正好产生一个UDP数据报（强调单个），并组装成一份待发送的IP数据报；</p>
-<p>对比：多个–》<strong>组成面向流字符</strong>的协议 TCP，应用程序产生的全体数据。</p>
-<p><img src="https://i.loli.net/2020/05/01/MLH1a2Yobfk75dr.png" alt=""></p>
-<p>​                                                        UDP的封装</p>
-<p>UDP不提供可靠性：把应用程序传给IP层的数据发送出去，并不保证他们能够到达目的地。</p>
-<p>应用程序必须关心IP数据报的长度，如果超过网络的MTU（2.8字节）就需要对IO数据报进行分片。</p>
-<h3 id="UDP首部"><a href="#UDP首部" class="headerlink" title="UDP首部"></a>UDP首部</h3><p><img src="https://i.loli.net/2020/05/01/IBSHFaxXqf9QZRn.png" alt="UDP首部"></p>
-<p>端口号表示发送进程和接收进程，TCP和UDP用目的端口号来获取来自IP层的数据，IP层把数据报分配给TCP和UDP（根据IP首部中协议字段值）</p>
-<p>TCP端口和UDP端口相互独立，各自从属的端口由各自协议查看。</p>
-<p>UDP长度字段指的是UDP首部和UDP数据的字节长度，该字段最小值为8个字节。</p>
-<p>IP数据报长度指的是数据报全长，UDP数据报长度是全长减去IP首部的长度。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9tzqm3t000zs23b02ha9xol" class="article-share-link">Share</a>
-      
-      
     </footer>
   </div>
   
@@ -955,7 +1024,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
     </div>
   </div>
 
@@ -965,7 +1034,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" style="font-size: 10px;">【多线程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
     </div>
   </div>
 
@@ -987,6 +1056,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/">Java多线程-线程安全之原子性，可见性，有序性</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java内存模型</a>
           </li>
         
@@ -1000,10 +1073,6 @@
         
           <li>
             <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
-          </li>
-        
-          <li>
-            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
           </li>
         
       </ul>

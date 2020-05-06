@@ -69,6 +69,54 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-UDP" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/05/01/UDP/" class="article-date">
+  <time datetime="2020-05-01T05:38:28.714Z" itemprop="datePublished">2020-05-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/01/UDP/">UDP</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="UDP用户数据报协议"><a href="#UDP用户数据报协议" class="headerlink" title="UDP用户数据报协议"></a>UDP用户数据报协议</h2><h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>UDP是一个简单的面向数据报的运输层协议：</p>
+<p>进程的每个输出操作都正好产生一个UDP数据报（强调单个），并组装成一份待发送的IP数据报；</p>
+<p>对比：多个–》<strong>组成面向流字符</strong>的协议 TCP，应用程序产生的全体数据。</p>
+<p><img src="https://i.loli.net/2020/05/01/MLH1a2Yobfk75dr.png" alt=""></p>
+<p>​                                                        UDP的封装</p>
+<p>UDP不提供可靠性：把应用程序传给IP层的数据发送出去，并不保证他们能够到达目的地。</p>
+<p>应用程序必须关心IP数据报的长度，如果超过网络的MTU（2.8字节）就需要对IO数据报进行分片。</p>
+<h3 id="UDP首部"><a href="#UDP首部" class="headerlink" title="UDP首部"></a>UDP首部</h3><p><img src="https://i.loli.net/2020/05/01/IBSHFaxXqf9QZRn.png" alt="UDP首部"></p>
+<p>端口号表示发送进程和接收进程，TCP和UDP用目的端口号来获取来自IP层的数据，IP层把数据报分配给TCP和UDP（根据IP首部中协议字段值）</p>
+<p>TCP端口和UDP端口相互独立，各自从属的端口由各自协议查看。</p>
+<p>UDP长度字段指的是UDP首部和UDP数据的字节长度，该字段最小值为8个字节。</p>
+<p>IP数据报长度指的是数据报全长，UDP数据报长度是全长减去IP首部的长度。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://hashwaney.github.io/2020/05/01/UDP/" data-id="ck9uq1hif000od03b74ohef2t" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-TCPIP协议族" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" class="article-date">
@@ -204,10 +252,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9tzqm3e000ls23be8iibevq" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/30/TCPIP%E5%8D%8F%E8%AE%AE%E6%97%8F/" data-id="ck9uq1hib000fd03bggsn9k5v" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li></ul>
 
     </footer>
   </div>
@@ -269,7 +317,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9tzqm360003s23b1jd90k9k" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI-CallBack/" data-id="ck9uq1hhv0000d03b7ax8f5al" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -324,7 +372,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9tzqm380006s23b0vw1hmdg" class="article-share-link">Share</a>
+      <a data-url="http://hashwaney.github.io/2020/04/29/JNI/" data-id="ck9uq1hi30004d03b2pi91erh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li></ul>
@@ -361,7 +409,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" rel="tag">面试集锦</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JNI/" rel="tag">JNI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" rel="tag">【Java并发编程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" rel="tag">【多线程】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" rel="tag">【网络】</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" rel="tag">【面试集锦】</a></li></ul>
     </div>
   </div>
 
@@ -371,7 +419,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" style="font-size: 10px;">多线程</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">网络</a> <a href="/tags/%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6/" style="font-size: 10px;">面试集锦</a>
+      <a href="/tags/Android/" style="font-size: 15px;">Android</a> <a href="/tags/JNI/" style="font-size: 15px;">JNI</a> <a href="/tags/%E3%80%90Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E3%80%91/" style="font-size: 20px;">【Java并发编程】</a> <a href="/tags/%E3%80%90%E5%A4%9A%E7%BA%BF%E7%A8%8B%E3%80%91/" style="font-size: 10px;">【多线程】</a> <a href="/tags/%E3%80%90%E7%BD%91%E7%BB%9C%E3%80%91/" style="font-size: 10px;">【网络】</a> <a href="/tags/%E3%80%90%E9%9D%A2%E8%AF%95%E9%9B%86%E9%94%A6%E3%80%91/" style="font-size: 10px;">【面试集锦】</a>
     </div>
   </div>
 
@@ -393,6 +441,10 @@
       <ul>
         
           <li>
+            <a href="/2020/05/06/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E4%B9%8B%E5%8E%9F%E5%AD%90%E6%80%A7%EF%BC%8C%E5%8F%AF%E8%A7%81%E6%80%A7%EF%BC%8C%E6%9C%89%E5%BA%8F%E6%80%A7/">Java多线程-线程安全之原子性，可见性，有序性</a>
+          </li>
+        
+          <li>
             <a href="/2020/05/05/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java内存模型</a>
           </li>
         
@@ -406,10 +458,6 @@
         
           <li>
             <a href="/2020/05/03/Android%E5%A4%8D%E4%B9%A0/">Android面试集锦（一）内存泄露篇</a>
-          </li>
-        
-          <li>
-            <a href="/2020/05/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B(%E4%BA%94)%20%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B/">Java多线程（五）生产者和消费者模型</a>
           </li>
         
       </ul>
